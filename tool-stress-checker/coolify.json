@@ -1,0 +1,72 @@
+{
+  "name": "SAMEBI Stress-Checker",
+  "description": "Multi-language stress assessment tool for psychologists",
+  "version": "1.0.0",
+  "type": "docker-compose",
+  "services": {
+    "stress-checker-es": {
+      "name": "Stress Checker Spanish",
+      "description": "Spanish version - Production ready",
+      "domain": "test-estres.samebi.net",
+      "port": 80,
+      "healthcheck": "/health",
+      "environment": {
+        "LANGUAGE": "es",
+        "API_URL": "https://es-api.samebi.net",
+        "GA_TRACKING_ID": "G-ES-XXXXXXXXX"
+      }
+    },
+    "stress-checker-de": {
+      "name": "Stress Checker German", 
+      "description": "German version - 75% ready",
+      "domain": "stress-test.samebi.net",
+      "port": 80,
+      "healthcheck": "/health",
+      "environment": {
+        "LANGUAGE": "de",
+        "API_URL": "https://api.samebi.net",
+        "GA_TRACKING_ID": "G-DE-XXXXXXXXX"
+      }
+    },
+    "stress-checker-en": {
+      "name": "Stress Checker English",
+      "description": "English version - Waiting for completion",
+      "domain": "stress-check.samebi.net", 
+      "port": 80,
+      "healthcheck": "/health",
+      "environment": {
+        "LANGUAGE": "en",
+        "API_URL": "https://en-api.samebi.net",
+        "GA_TRACKING_ID": "G-EN-XXXXXXXXX"
+      }
+    }
+  },
+  "networks": {
+    "samebi_network": {
+      "external": true
+    }
+  },
+  "deployment": {
+    "strategy": "rolling",
+    "auto_deploy": true,
+    "branch": "main",
+    "build_command": "docker-compose build",
+    "health_check": {
+      "enabled": true,
+      "path": "/health",
+      "interval": 30,
+      "timeout": 10,
+      "retries": 3
+    }
+  },
+  "monitoring": {
+    "logs": true,
+    "metrics": true,
+    "alerts": {
+      "downtime": true,
+      "high_cpu": true,
+      "high_memory": true
+    }
+  }
+}
+

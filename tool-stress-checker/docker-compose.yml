@@ -1,0 +1,84 @@
+# Docker Compose für SAMEBI Stress-Checker
+# Unterstützt alle 3 Sprachen mit separaten Services
+
+version: '3.8'
+
+services:
+  # Spanische Version (Produktiv)
+  stress-checker-es:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        LANGUAGE: es
+        API_URL: https://es-api.samebi.net
+        GA_TRACKING_ID: G-ES-XXXXXXXXX
+    container_name: stress_checker_es
+    ports:
+      - "3001:80"
+    environment:
+      - NODE_ENV=production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.stress-es.rule=Host(`test-estres.samebi.net`)"
+      - "traefik.http.routers.stress-es.tls=true"
+      - "traefik.http.routers.stress-es.tls.certresolver=letsencrypt"
+    restart: unless-stopped
+    networks:
+      - samebi_network
+
+  # Deutsche Version
+  stress-checker-de:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        LANGUAGE: de
+        API_URL: https://api.samebi.net
+        GA_TRACKING_ID: G-DE-XXXXXXXXX
+    container_name: stress_checker_de
+    ports:
+      - "3002:80"
+    environment:
+      - NODE_ENV=production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.stress-de.rule=Host(`stress-test.samebi.net`)"
+      - "traefik.http.routers.stress-de.tls=true"
+      - "traefik.http.routers.stress-de.tls.certresolver=letsencrypt"
+    restart: unless-stopped
+    networks:
+      - samebi_network
+
+  # Englische Version
+  stress-checker-en:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        LANGUAGE: en
+        API_URL: https://en-api.samebi.net
+        GA_TRACKING_ID: G-EN-XXXXXXXXX
+    container_name: stress_checker_en
+    ports:
+      - "3003:80"
+    environment:
+      - NODE_ENV=production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.stress-en.rule=Host(`stress-check.samebi.net`)"
+      - "traefik.http.routers.stress-en.tls=true"
+      - "traefik.http.routers.stress-en.tls.certresolver=letsencrypt"
+    restart: unless-stopped
+    networks:
+      - samebi_network
+
+networks:
+  samebi_network:
+    external: true
+
+# Volumes für Logs (optional)
+volumes:
+  nginx_logs:
+    driver: local
+
