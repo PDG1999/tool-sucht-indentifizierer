@@ -1,13 +1,21 @@
 {
-  "name": "screening-tool-samebi",
-  "description": "Getarntes Sucht-Screening-Tool für Psychologen",
+  "name": "screening-tool-professional",
+  "description": "Professionelles Sucht-Screening-Tool für Psychologen und Berater",
   "type": "docker-compose",
   "repository": "https://github.com/PDG1999/tool-sucht-identifizieren-anonym.git",
   "branch": "main",
   "buildpack": "dockerfile",
   "dockerfile": "Dockerfile",
   "environment": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "VITE_APP_TYPE": "professional",
+    "VITE_TARGET_AUDIENCE": "counselors",
+    "VITE_APP_NAME": "SAMEBI Screening-Tool",
+    "VITE_APP_DESCRIPTION": "Professionelles Sucht-Screening für Psychologen",
+    "VITE_DOMAIN": "screening.samebi.net",
+    "VITE_API_URL": "https://api.samebi.net",
+    "VITE_SUPPORT_EMAIL": "support@samebi.net",
+    "VITE_COMPANY_NAME": "SAMEBI Deutschland"
   },
   "domains": [
     "screening.samebi.net"
@@ -20,15 +28,15 @@
   ],
   "volumes": [],
   "healthcheck": {
-    "path": "/health",
+    "path": "/",
     "interval": 30,
     "timeout": 10,
     "retries": 3
   },
   "labels": {
     "traefik.enable": "true",
-    "traefik.http.routers.screening-tool.rule": "Host(`screening.samebi.net`)",
-    "traefik.http.routers.screening-tool.tls": "true",
-    "traefik.http.routers.screening-tool.tls.certresolver": "letsencrypt"
+    "traefik.http.routers.screening-professional.rule": "Host(`screening.samebi.net`)",
+    "traefik.http.routers.screening-professional.tls": "true",
+    "traefik.http.routers.screening-professional.tls.certresolver": "letsencrypt"
   }
 }

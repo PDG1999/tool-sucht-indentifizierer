@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ScreeningTest from '@/components/ScreeningTest';
-import LandingPage from '@/components/LandingPage';
-import PrivacyPolicy from '@/components/PrivacyPolicy';
-import TermsOfService from '@/components/TermsOfService';
-import DashboardLayout from '@/components/DashboardLayout';
+import ScreeningTest from './components/ScreeningTest';
+import LandingPage from './components/LandingPage';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
+import DashboardLayout from './components/DashboardLayout';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
