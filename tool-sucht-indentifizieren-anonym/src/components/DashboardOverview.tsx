@@ -2,6 +2,7 @@ import React from 'react';
 import { BarChart3, Users, FileText, AlertTriangle, TrendingUp, Calendar } from 'lucide-react';
 import { DashboardStats } from '../types/dashboard';
 import { mockDashboardStats } from '../data/mockData';
+import QuickActions from './QuickActions';
 
 const DashboardOverview: React.FC = () => {
   const stats = mockDashboardStats;
@@ -116,6 +117,17 @@ const DashboardOverview: React.FC = () => {
           subtitle="Sofortige Aufmerksamkeit"
         />
       </div>
+
+      {/* Quick Actions */}
+      <QuickActions
+        onNewClient={() => console.log('New client')}
+        onNewTest={() => console.log('New test')}
+        onExport={() => console.log('Export')}
+        onSchedule={() => console.log('Schedule')}
+        onViewClients={() => console.log('View clients')}
+        onViewAnalytics={() => console.log('View analytics')}
+        urgentTasks={3}
+      />
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

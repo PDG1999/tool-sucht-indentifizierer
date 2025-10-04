@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Search, Filter, Plus, Eye, Edit, BarChart3, Calendar, Phone, Mail, Users } from 'lucide-react';
+import { Search, Filter, Plus, Eye, Edit, BarChart3, Calendar, Phone, Mail, Users, Grid, List } from 'lucide-react';
 import { Client, TestResult } from '../types/dashboard';
 import { mockClients, mockTestResults } from '../data/mockData';
+import MobileClientCard from './MobileClientCard';
 
 interface ClientListProps {
   onClientSelect: (clientId: string) => void;
@@ -10,6 +11,7 @@ interface ClientListProps {
 const ClientList: React.FC<ClientListProps> = ({ onClientSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRisk, setFilterRisk] = useState('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [clients] = useState<Client[]>(mockClients);
   const [testResults] = useState<TestResult[]>(mockTestResults);
 
@@ -74,7 +76,7 @@ const ClientList: React.FC<ClientListProps> = ({ onClientSelect }) => {
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+      <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -101,13 +103,54 @@ const ClientList: React.FC<ClientListProps> = ({ onClientSelect }) => {
               <option value="kritisch">Kritisch</option>
             </select>
           </div>
+          {/* View Mode Toggle - Hidden on mobile */}
+          <div className="hidden sm:flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === 'grid' 
+                  ? 'bg-white text-samebi-600 shadow-sm' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+              title="Grid-Ansicht"
+            >
+              <Grid className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === 'list' 
+                  ? 'bg-white text-samebi-600 shadow-sm' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+              title="Listen-Ansicht"
+            >
+              <List className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Clients Table */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+      {/* Mobile Grid View */}
+      {viewMode === 'grid' && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredClients.map((client) => (
+            <MobileClientCard
+              key={client.id}
+              client={client}
+              onView={onClientSelect}
+              getRiskLevel={getRiskLevel}
+              getLastTestDate={getLastTestDate}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Desktop Table View */}
+      {viewMode === 'list' && (
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -206,6 +249,7 @@ const ClientList: React.FC<ClientListProps> = ({ onClientSelect }) => {
           </table>
         </div>
       </div>
+      )}
 
       {/* Empty State */}
       {filteredClients.length === 0 && (

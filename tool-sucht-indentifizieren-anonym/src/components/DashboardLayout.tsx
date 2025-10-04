@@ -14,6 +14,7 @@ import ClientList from './ClientList';
 import ClientDetail from './ClientDetail';
 import Analytics from './Analytics';
 import Settings from './Settings';
+import NotificationCenter from './NotificationCenter';
 
 type DashboardView = 'overview' | 'clients' | 'client-detail' | 'analytics' | 'settings';
 
@@ -169,7 +170,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout }) => {
             </div>
 
             <div className="flex items-center space-x-4">
-              <div className="text-sm text-gray-500">
+              <NotificationCenter />
+              <div className="hidden sm:block text-sm text-gray-500">
                 {new Date().toLocaleDateString('de-DE', { 
                   weekday: 'long', 
                   year: 'numeric', 
