@@ -12,6 +12,8 @@ import {
 import DashboardOverview from './DashboardOverview';
 import ClientList from './ClientList';
 import ClientDetail from './ClientDetail';
+import Analytics from './Analytics';
+import Settings from './Settings';
 
 type DashboardView = 'overview' | 'clients' | 'client-detail' | 'analytics' | 'settings';
 
@@ -55,9 +57,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout }) => {
           />
         ) : null;
       case 'analytics':
-        return <div className="p-6">Analytics - Coming Soon</div>;
+        return <Analytics />;
       case 'settings':
-        return <div className="p-6">Einstellungen - Coming Soon</div>;
+        return <Settings />;
       default:
         return <DashboardOverview />;
     }

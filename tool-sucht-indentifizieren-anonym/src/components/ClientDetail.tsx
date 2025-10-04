@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Calendar, Phone, Mail, Edit, Download, Printer, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Client, TestResult } from '../types/dashboard';
 import { mockClients, mockTestResults } from '../data/mockData';
+import { exportToPDF } from '../utils/export';
 
 interface ClientDetailProps {
   clientId: string;
@@ -77,9 +78,12 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ clientId, onBack }) => {
           </div>
         </div>
         <div className="flex space-x-3">
-          <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center">
+          <button 
+            onClick={() => latestTest && exportToPDF(latestTest, client)}
+            className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center"
+          >
             <Download className="h-4 w-4 mr-2" />
-            Export
+            PDF Export
           </button>
           <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center">
             <Printer className="h-4 w-4 mr-2" />
