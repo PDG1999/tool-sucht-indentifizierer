@@ -3,7 +3,7 @@ import {
   LayoutDashboard, 
   Users, 
   BarChart3, 
-  Settings, 
+  Settings as SettingsIcon, 
   LogOut, 
   Menu, 
   X,
@@ -31,7 +31,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout }) => {
     { id: 'overview', name: 'Übersicht', icon: LayoutDashboard },
     { id: 'clients', name: 'Klienten', icon: Users },
     { id: 'analytics', name: 'Analytics', icon: BarChart3 },
-    { id: 'settings', name: 'Einstellungen', icon: Settings },
+    { id: 'settings', name: 'Einstellungen', icon: SettingsIcon },
   ];
 
   const handleClientSelect = (clientId: string) => {
