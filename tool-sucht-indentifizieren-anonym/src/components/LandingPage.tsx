@@ -16,6 +16,7 @@ const LandingPage: React.FC = () => {
               <span className="ml-3 text-xl font-bold text-gray-900">SAMEBI</span>
             </div>
             <nav className="hidden md:flex space-x-8">
+              <Link to="/dashboard" className="text-samebi-600 hover:text-samebi-700 font-medium">Berater-Dashboard</Link>
               <Link to="/privacy" className="text-gray-500 hover:text-gray-900">Datenschutz</Link>
               <Link to="/terms" className="text-gray-500 hover:text-gray-900">AGB</Link>
             </nav>
