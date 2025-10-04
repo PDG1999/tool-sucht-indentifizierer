@@ -13,7 +13,7 @@ import DashboardOverview from './DashboardOverview';
 import ClientList from './ClientList';
 import ClientDetail from './ClientDetail';
 import Analytics from './Analytics';
-import Settings from './Settings';
+import SettingsComponent from './Settings';
 import NotificationCenter from './NotificationCenter';
 
 type DashboardView = 'overview' | 'clients' | 'client-detail' | 'analytics' | 'settings';
@@ -60,7 +60,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout }) => {
       case 'analytics':
         return <Analytics />;
       case 'settings':
-        return <Settings />;
+        return <SettingsComponent />;
       default:
         return <DashboardOverview />;
     }
