@@ -1,0 +1,34 @@
+{
+  "name": "screening-tool-samebi",
+  "description": "Getarntes Sucht-Screening-Tool für Psychologen",
+  "type": "docker-compose",
+  "repository": "https://github.com/PDG1999/tool-sucht-identifizieren-anonym.git",
+  "branch": "main",
+  "buildpack": "dockerfile",
+  "dockerfile": "Dockerfile",
+  "environment": {
+    "NODE_ENV": "production"
+  },
+  "domains": [
+    "screening.samebi.net"
+  ],
+  "ports": [
+    {
+      "container": 80,
+      "host": 3002
+    }
+  ],
+  "volumes": [],
+  "healthcheck": {
+    "path": "/health",
+    "interval": 30,
+    "timeout": 10,
+    "retries": 3
+  },
+  "labels": {
+    "traefik.enable": "true",
+    "traefik.http.routers.screening-tool.rule": "Host(`screening.samebi.net`)",
+    "traefik.http.routers.screening-tool.tls": "true",
+    "traefik.http.routers.screening-tool.tls.certresolver": "letsencrypt"
+  }
+}
