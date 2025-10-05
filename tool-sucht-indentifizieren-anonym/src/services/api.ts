@@ -34,6 +34,7 @@ export const testResultsAPI = {
     professionalScores: any;
     riskLevel: string;
     primaryConcern: string;
+    sessionData?: any;
   }) => {
     return apiCall('/test-results/submit', {
       method: 'POST',

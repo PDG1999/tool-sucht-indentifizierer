@@ -1,14 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, ArrowLeft, CheckCircle, AlertTriangle, Lock, Eye } from 'lucide-react';
 import { questions, sections } from '../data/questions';
 import { Response, calculatePublicScores, calculateProfessionalScores, getRecommendations } from '../utils/scoring';
 import { testResultsAPI } from '../services/api';
+import { getUserSession, TestSessionTracker } from '../utils/tracking';
 
 const ScreeningTest: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [responses, setResponses] = useState<Response[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [isProView, setIsProView] = useState(false);
+  const sessionTrackerRef = useRef<TestSessionTracker | null>(null);
+
+  // Initialize tracking on component mount
+  useEffect(() => {
+    const initTracking = async () => {
+      const userSession = await getUserSession();
+      sessionTrackerRef.current = new TestSessionTracker(userSession);
+      sessionTrackerRef.current.startQuestion(questions[0].id);
+    };
+    
+    initTracking();
+    
+    // Track page unload (user leaves without finishing)
+    const handleBeforeUnload = () => {
+      if (sessionTrackerRef.current && !showResults) {
+        sessionTrackerRef.current.abort(questions[currentStep].id);
+      }
+    };
+    
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
+  // Track question changes
+  useEffect(() => {
+    if (sessionTrackerRef.current && !showResults) {
+      sessionTrackerRef.current.startQuestion(questions[currentStep].id);
+    }
+  }, [currentStep, showResults]);
 
   const currentQuestion = questions[currentStep];
   const progress = ((currentStep + 1) / questions.length) * 100;
@@ -17,6 +50,11 @@ const ScreeningTest: React.FC = () => {
     const newResponses = responses.filter(r => r.questionId !== currentQuestion.id);
     newResponses.push({ questionId: currentQuestion.id, value });
     setResponses(newResponses);
+    
+    // Track answer
+    if (sessionTrackerRef.current) {
+      sessionTrackerRef.current.recordAnswer(currentQuestion.id, value);
+    }
   };
 
   const currentAnswer = responses.find(r => r.questionId === currentQuestion.id)?.value;
@@ -25,9 +63,17 @@ const ScreeningTest: React.FC = () => {
     if (currentStep < questions.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
+      // Mark test as complete
+      if (sessionTrackerRef.current) {
+        sessionTrackerRef.current.complete();
+      }
+      
       // Calculate scores before showing results
       const publicScores = calculatePublicScores(responses);
       const proScores = calculateProfessionalScores(responses);
+      
+      // Get session data
+      const sessionData = sessionTrackerRef.current?.getSession();
       
       // Save to database
       try {
@@ -36,9 +82,24 @@ const ScreeningTest: React.FC = () => {
           publicScores,
           professionalScores: proScores,
           riskLevel: proScores.overallRisk >= 70 ? 'kritisch' : proScores.overallRisk >= 50 ? 'hoch' : proScores.overallRisk >= 30 ? 'mittel' : 'niedrig',
-          primaryConcern: proScores.categories.sort((a, b) => b.score - a.score)[0]?.name || 'Unbekannt'
+          primaryConcern: proScores.categories.sort((a, b) => b.score - a.score)[0]?.name || 'Unbekannt',
+          // Include tracking data
+          sessionData: sessionData ? {
+            userSession: sessionData.userSession,
+            testSession: {
+              startTime: sessionData.startTime,
+              endTime: sessionData.endTime,
+              totalTime: sessionData.totalTime,
+              resumeCount: sessionData.resumeCount,
+              abortedAt: sessionData.abortedAt,
+            },
+            questionMetrics: sessionData.questionMetrics,
+          } : undefined,
         });
-        console.log('Test-Ergebnisse erfolgreich gespeichert');
+        console.log('Test-Ergebnisse erfolgreich gespeichert mit Tracking-Daten');
+        
+        // Clear session after successful submission
+        TestSessionTracker.clearSession();
       } catch (error) {
         console.error('Fehler beim Speichern der Test-Ergebnisse:', error);
         // Continue anyway - don't block user from seeing results
