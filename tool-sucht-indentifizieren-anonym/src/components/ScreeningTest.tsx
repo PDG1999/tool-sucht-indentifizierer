@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowRight, ArrowLeft, CheckCircle, AlertTriangle, Lock, Eye } from 'lucide-react';
-import { questions, sections } from '@/data/questions';
-import { Response, calculatePublicScores, calculateProfessionalScores, getRecommendations } from '@/utils/scoring';
+import { questions, sections } from '../data/questions';
+import { Response, calculatePublicScores, calculateProfessionalScores, getRecommendations } from '../utils/scoring';
+import { testResultsAPI } from '../services/api';
 
 const ScreeningTest: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -20,10 +21,29 @@ const ScreeningTest: React.FC = () => {
 
   const currentAnswer = responses.find(r => r.questionId === currentQuestion.id)?.value;
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < questions.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
+      // Calculate scores before showing results
+      const publicScores = calculatePublicScores(responses);
+      const proScores = calculateProfessionalScores(responses);
+      
+      // Save to database
+      try {
+        await testResultsAPI.submit({
+          responses: responses.map(r => ({ questionId: r.questionId, answer: r.value })),
+          publicScores,
+          professionalScores: proScores,
+          riskLevel: proScores.overallRisk >= 70 ? 'kritisch' : proScores.overallRisk >= 50 ? 'hoch' : proScores.overallRisk >= 30 ? 'mittel' : 'niedrig',
+          primaryConcern: proScores.categories.sort((a, b) => b.score - a.score)[0]?.name || 'Unbekannt'
+        });
+        console.log('Test-Ergebnisse erfolgreich gespeichert');
+      } catch (error) {
+        console.error('Fehler beim Speichern der Test-Ergebnisse:', error);
+        // Continue anyway - don't block user from seeing results
+      }
+      
       setShowResults(true);
     }
   };
