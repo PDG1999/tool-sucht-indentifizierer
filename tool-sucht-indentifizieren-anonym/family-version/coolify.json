@@ -1,0 +1,26 @@
+{
+  "name": "sucht-check-family-de",
+  "description": "Sucht-Check für Familie & Freunde - Deutsche Version",
+  "domains": ["sucht-check.samebi.net"],
+  "buildCommand": "npm install && npm run build",
+  "startCommand": "npm run preview -- --host --port $PORT",
+  "environment": {
+    "NODE_ENV": "production",
+    "VITE_APP_TYPE": "family",
+    "VITE_TARGET_AUDIENCE": "relatives",
+    "VITE_LANGUAGE": "de"
+  },
+  "healthCheck": {
+    "path": "/",
+    "interval": 30,
+    "timeout": 10,
+    "retries": 3
+  },
+  "resources": {
+    "memory": "512Mi",
+    "cpu": "0.5"
+  },
+  "autoUpdate": true,
+  "branch": "main"
+}
+

@@ -75,6 +75,13 @@ router.post('/submit', async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
     
+    // Get system account ID for anonymous tests
+    const { pool } = require('../config/database');
+    const systemAccountQuery = await pool.query(
+      "SELECT id FROM counselors WHERE email = 'system@samebi.net' LIMIT 1"
+    );
+    const systemCounselorId = systemAccountQuery.rows[0]?.id || null;
+    
     // Check if client exists by email, create if not
     let client;
     if (clientEmail) {
@@ -82,18 +89,18 @@ router.post('/submit', async (req, res) => {
     }
     
     if (!client && clientEmail) {
-      // Create anonymous client
+      // Create anonymous client assigned to system account
       client = await Client.create({
         name: clientName || 'Anonymer Test',
         email: clientEmail,
-        counselor_id: null, // Will be assigned later by counselor
+        counselor_id: systemCounselorId, // Assign to system account
         status: 'active'
       });
     }
     
     const testResult = await TestResult.create({
       client_id: client ? client.id : null,
-      counselor_id: null, // Will be assigned later
+      counselor_id: systemCounselorId, // Assign to system account for anonymous tests
       responses: JSON.stringify(responses),
       public_scores: JSON.stringify(publicScores),
       professional_scores: JSON.stringify(professionalScores),

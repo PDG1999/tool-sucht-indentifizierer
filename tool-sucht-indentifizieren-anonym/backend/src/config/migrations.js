@@ -37,32 +37,35 @@ async function runMigrations() {
     
     // Check if demo accounts exist
     const accountCheck = await client.query(`
-      SELECT COUNT(*) as count FROM counselors WHERE email IN ('berater@samebi.net', 'supervisor@samebi.net');
+      SELECT COUNT(*) as count FROM counselors WHERE email IN ('berater@samebi.net', 'supervisor@samebi.net', 'system@samebi.net');
     `);
     
     const accountCount = parseInt(accountCheck.rows[0].count);
     
-    if (accountCount === 0) {
-      console.log('👥 Creating demo accounts...');
+    if (accountCount < 3) {
+      console.log('👥 Creating demo & system accounts...');
       
       // Hash passwords
       const beraterHash = await bcrypt.hash('Demo2025!', 10);
       const supervisorHash = await bcrypt.hash('Supervisor2025!', 10);
+      const systemHash = await bcrypt.hash('SYSTEM_ACCOUNT_NO_LOGIN', 10); // Dummy-Hash
       
-      // Insert demo accounts
+      // Insert demo accounts + system account
       await client.query(`
         INSERT INTO counselors (name, email, password_hash, role, is_active, license_number, specialization)
         VALUES 
           ('Demo Berater', 'berater@samebi.net', $1, 'counselor', true, 'DE-12345', ARRAY['Suchtberatung', 'Verhaltenstherapie']),
-          ('SAMEBI Supervisor', 'supervisor@samebi.net', $2, 'supervisor', true, 'DE-ADMIN', ARRAY['Supervision', 'System-Admin'])
+          ('SAMEBI Supervisor', 'supervisor@samebi.net', $2, 'supervisor', true, 'DE-ADMIN', ARRAY['Supervision', 'System-Admin']),
+          ('🌐 SAMEBI System (Anonyme Tests)', 'system@samebi.net', $3, 'counselor', false, 'SYSTEM-000', ARRAY['System-Account', 'Anonyme Tests'])
         ON CONFLICT (email) DO NOTHING;
-      `, [beraterHash, supervisorHash]);
+      `, [beraterHash, supervisorHash, systemHash]);
       
-      console.log('✅ Demo accounts created!');
+      console.log('✅ Demo & System accounts created!');
       console.log('   📧 Berater: berater@samebi.net / Demo2025!');
       console.log('   📧 Supervisor: supervisor@samebi.net / Supervisor2025!');
+      console.log('   🤖 System: system@samebi.net (INAKTIV - nur für anonyme Tests)');
     } else {
-      console.log('✅ Demo accounts already exist.');
+      console.log('✅ Demo & System accounts already exist.');
     }
     
     console.log('🎉 Database ready!');

@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  family-version:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sucht-check-family-de
+    ports:
+      - "3003:80"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - VITE_APP_TYPE=family
+      - VITE_TARGET_AUDIENCE=relatives
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    networks:
+      - samebi-network
+
+networks:
+  samebi-network:
+    external: true
+

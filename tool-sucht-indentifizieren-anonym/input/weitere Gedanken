@@ -12,3 +12,19 @@ erledigt 5.10.2025 -12:22
 5. sollten wir noch einen deutlich kürzere Version anbieten (10 Fragen) -  inkl. Auswertung, aber von dort an die option anzubieten, die Pro Version durchzuführen, um ... (hier brauchen wir einen Baite , Motivation , etwas das genau diese Leute triggert weiterzumachen)
 
 6. werden wir durch die test feststellen können in welche richtung die Adiction geht?
+
+-------
+Dashboard Erweiterungen
+
+3️⃣ Berater-Anmeldung & Freemium-Modell
+Aktuell: Nur manuelle Anlage durch dich (via Script)
+Für Freemium brauchst du:
+Registrierungs-Seite für neue Berater
+Stripe/Paddle Integration für Zahlungen
+Quota-System in der Datenbank:
+test_quota (z.B. 10 gratis Tests)
+subscription_status (free/pro/enterprise)
+subscription_expires_at
+Soll ich das implementieren? Das wäre eine größere Erweiterung! 🚀
+
+
