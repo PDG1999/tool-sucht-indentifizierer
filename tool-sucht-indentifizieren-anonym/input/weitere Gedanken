@@ -16,7 +16,7 @@ erledigt 5.10.2025 -12:22
 -------
 Dashboard Erweiterungen
 
-3️⃣ Berater-Anmeldung & Freemium-Modell
+1. 3️⃣ Berater-Anmeldung & Freemium-Modell
 Aktuell: Nur manuelle Anlage durch dich (via Script)
 Für Freemium brauchst du:
 Registrierungs-Seite für neue Berater
@@ -27,4 +27,7 @@ subscription_status (free/pro/enterprise)
 subscription_expires_at
 Soll ich das implementieren? Das wäre eine größere Erweiterung! 🚀
 
-
+2. 🎯 Später hinzufügen (optional):
+Zuweisungs-Feature: Supervisor kann Tests von System → Berater verschieben
+Bulk-Actions: Mehrere Tests auf einmal zuweisen
+Notifications: Berater werden benachrichtigt bei neuen Zuweisungen
