@@ -1,0 +1,179 @@
+{
+  "toolId": "stress-test",
+  "version": "1.0.0",
+  "lastUpdated": "2024-12-30T00:00:00Z",
+  "meta": {
+    "title": "Stress-Test | Professionelle Bewertung - SAMEBI",
+    "description": "Wissenschaftlich validierter Stress-Level Test für Psychologen. Kostenlose Bewertung in 5 Minuten mit personalisierten Empfehlungen.",
+    "keywords": "stress test, psychologische bewertung, burnout, angst, psychologen deutschland"
+  },
+  "nav": {
+    "home": "Startseite",
+    "test": "Stress-Test",
+    "results": "Ergebnisse",
+    "contact": "Kontakt",
+    "privacy": "Datenschutz",
+    "terms": "AGB"
+  },
+  "landing": {
+    "title": "Professioneller Stress-Test",
+    "subtitle": "Wissenschaftlich Validiert",
+    "description": "Bewerten Sie Ihr Stress-Level in nur 5 Minuten mit unserem wissenschaftlich fundierten Test. Entwickelt von Psychologen für Psychologen.",
+    "startTest": "Test jetzt starten",
+    "features": {
+      "scientific": "Wissenschaftlich Validiert",
+      "quick": "Nur 5 Minuten",
+      "detailed": "Detaillierte Analyse",
+      "recommendations": "Personalisierte Empfehlungen"
+    },
+    "stats": {
+      "testsCompleted": "Tests durchgeführt",
+      "psychologists": "Psychologen vertrauen uns",
+      "accuracy": "Genauigkeit"
+    },
+    "testimonials": {
+      "title": "Was unsere Nutzer sagen",
+      "testimonial1": "Ein ausgezeichnetes Tool für die erste Einschätzung meiner Klienten.",
+      "testimonial2": "Die Ergebnisse sind präzise und die Empfehlungen sehr hilfreich.",
+      "testimonial3": "Spart mir viel Zeit in der Erstberatung."
+    },
+    "cta": {
+      "title": "Bereit für Ihren Stress-Test?",
+      "description": "Starten Sie jetzt und erhalten Sie in nur 5 Minuten eine wissenschaftlich fundierte Analyse Ihres Stresslevels.",
+      "button": "Test jetzt starten"
+    }
+  },
+  "test": {
+    "title": "Stress-Level Assessment",
+    "subtitle": "Beantworten Sie die folgenden 15 Fragen ehrlich und spontan",
+    "progress": "Frage {{current}} von {{total}}",
+    "timeRemaining": "Geschätzte Zeit: {{minutes}} Minuten",
+    "questions": [
+      "Ich fühle mich überwältigt von meinen täglichen Aufgaben",
+      "Ich habe Schwierigkeiten, mich zu entspannen",
+      "Ich mache mir Sorgen über Dinge, die außerhalb meiner Kontrolle liegen",
+      "Ich fühle mich müde, auch nach ausreichend Schlaf",
+      "Ich habe Schwierigkeiten, mich zu konzentrieren",
+      "Ich reagiere gereizt auf kleine Probleme",
+      "Ich habe körperliche Symptome wie Kopfschmerzen oder Verspannungen",
+      "Ich vermeide soziale Situationen oder Aktivitäten",
+      "Ich habe Schwierigkeiten beim Einschlafen oder Durchschlafen",
+      "Ich fühle mich emotional erschöpft",
+      "Ich habe das Gefühl, keine Kontrolle über mein Leben zu haben",
+      "Es fällt mir schwer, Entscheidungen zu treffen",
+      "Ich habe häufige Stimmungsschwankungen",
+      "Ich fühle mich von anderen abgekoppelt",
+      "Ich habe wiederkehrende negative Gedanken"
+    ],
+    "instructions": "Wählen Sie die Antwort, die am besten auf Sie zutrifft:",
+    "scale": {
+      "never": "Nie",
+      "rarely": "Selten",
+      "sometimes": "Manchmal",
+      "often": "Oft",
+      "always": "Immer"
+    },
+    "questions": [
+      "Ich fühle mich überwältigt von meinen täglichen Aufgaben",
+      "Ich habe Schwierigkeiten, mich zu entspannen",
+      "Ich mache mir Sorgen über Dinge, die außerhalb meiner Kontrolle liegen",
+      "Ich fühle mich müde, auch nach ausreichend Schlaf",
+      "Ich habe Schwierigkeiten, mich zu konzentrieren",
+      "Ich reagiere gereizt auf kleine Probleme",
+      "Ich habe körperliche Symptome wie Kopfschmerzen oder Verspannungen",
+      "Ich vermeide soziale Situationen oder Aktivitäten",
+      "Ich habe Schwierigkeiten beim Einschlafen oder Durchschlafen",
+      "Ich fühle mich emotional erschöpft",
+      "Ich habe das Gefühl, keine Kontrolle über mein Leben zu haben",
+      "Ich grüble häufig über Probleme nach",
+      "Ich fühle mich unter Zeitdruck, auch bei einfachen Aufgaben",
+      "Ich habe Schwierigkeiten, Entscheidungen zu treffen",
+      "Ich fühle mich von meinen Verantwortungen erdrückt"
+    ],
+    "navigation": {
+      "back": "Zurück",
+      "next": "Weiter",
+      "submit": "Test abschließen",
+      "loading": "Wird ausgewertet..."
+    }
+  },
+  "results": {
+    "title": "Ihre Stress-Test Ergebnisse",
+    "score": "Ihr Score: {{score}} von 100 Punkten",
+    "levels": {
+      "low": "Niedriger Stress",
+      "moderate": "Moderater Stress",
+      "high": "Hoher Stress",
+      "critical": "Kritischer Stress"
+    },
+    "interpretations": {
+      "low": "Ihr Stressniveau liegt im normalen Bereich. Sie scheinen gut mit den täglichen Herausforderungen umgehen zu können.",
+      "moderate": "Ihr Stressniveau ist leicht erhöht. Es wäre ratsam, präventive Maßnahmen zu ergreifen.",
+      "high": "Ihr Stressniveau ist deutlich erhöht. Wir empfehlen Ihnen, professionelle Unterstützung zu suchen.",
+      "critical": "Ihr Stressniveau ist kritisch hoch. Bitte wenden Sie sich umgehend an einen Psychologen oder Arzt."
+    },
+    "recommendations": {
+      "title": "Personalisierte Empfehlungen",
+      "low": [
+        "Behalten Sie Ihre gesunden Gewohnheiten bei",
+        "Praktizieren Sie regelmäßig Entspannungstechniken",
+        "Achten Sie auf eine ausgewogene Work-Life-Balance"
+      ],
+      "moderate": [
+        "Implementieren Sie tägliche Entspannungsübungen",
+        "Überprüfen Sie Ihre Prioritäten und Zeitmanagement",
+        "Suchen Sie soziale Unterstützung bei Familie und Freunden",
+        "Erwägen Sie professionelle Beratung"
+      ],
+      "high": [
+        "Suchen Sie professionelle psychologische Unterstützung",
+        "Reduzieren Sie nicht-essentielle Verpflichtungen",
+        "Praktizieren Sie täglich Stressmanagement-Techniken",
+        "Achten Sie besonders auf Schlaf und Ernährung"
+      ],
+      "critical": [
+        "Kontaktieren Sie umgehend einen Psychologen oder Arzt",
+        "Erwägen Sie eine Auszeit oder Krankschreibung",
+        "Informieren Sie vertrauensvolle Personen über Ihre Situation",
+        "Nutzen Sie Krisenhotlines bei akuten Problemen"
+      ]
+    },
+    "emailCapture": {
+      "title": "Detaillierte Analyse anfordern",
+      "description": "Geben Sie Ihre E-Mail-Adresse ein, um Ihre Testergebnisse zu erhalten:",
+      "placeholder": "ihre.email@beispiel.de",
+      "consent": "Ich stimme zu, dass meine E-Mail-Adresse für die Zusendung der Testergebnisse verwendet wird.",
+      "submit": "Analyse anfordern",
+      "privacy": "Ihre Daten werden vertraulich behandelt und nicht an Dritte weitergegeben."
+    },
+    "detailedAnalysis": {
+      "title": "Detaillierte Analyse erhalten",
+      "description": "Erhalten Sie eine umfassende 15-seitige Analyse Ihres Stresslevels mit spezifischen Handlungsempfehlungen.",
+      "features": [
+        "Detaillierte Auswertung aller 15 Fragen",
+        "Personalisierte Stressmanagement-Strategien",
+        "Ressourcen und Übungen für den Alltag",
+        "Empfehlungen für weitere professionelle Hilfe"
+      ],
+      "price": "Nur 19€",
+      "cta": "Detaillierte Analyse erhalten"
+    },
+    "actions": {
+      "repeatTest": "Test wiederholen",
+      "backHome": "Zur Startseite"
+    }
+  },
+  "common": {
+    "loading": "Wird geladen...",
+    "error": "Ein Fehler ist aufgetreten",
+    "retry": "Erneut versuchen",
+    "close": "Schließen",
+    "save": "Speichern",
+    "cancel": "Abbrechen"
+  },
+  "footer": {
+    "copyright": "© 2024 SAMEBI Deutschland. Alle Rechte vorbehalten.",
+    "developed": "Professionelle Tools für Psychologen",
+    "contact": "📧 support@samebi.net"
+  }
+}

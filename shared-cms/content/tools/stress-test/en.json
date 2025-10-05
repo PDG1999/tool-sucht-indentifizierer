@@ -1,0 +1,179 @@
+{
+  "toolId": "stress-test",
+  "version": "1.0.0",
+  "lastUpdated": "2024-12-30T00:00:00Z",
+  "meta": {
+    "title": "Stress Test | Professional Assessment - SAMEBI",
+    "description": "Scientifically validated stress level test for psychologists. Free assessment in 5 minutes with personalized recommendations.",
+    "keywords": "stress test, psychological assessment, burnout, anxiety, psychologists international"
+  },
+  "nav": {
+    "home": "Home",
+    "test": "Stress Test",
+    "results": "Results",
+    "contact": "Contact",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "landing": {
+    "title": "Professional Stress Test",
+    "subtitle": "Scientifically Validated",
+    "description": "Assess your stress level in just 5 minutes with our professional, evidence-based test. Developed by psychologists for psychologists.",
+    "startTest": "Start Test Now",
+    "features": {
+      "scientific": "Scientifically Validated",
+      "quick": "Only 5 Minutes",
+      "detailed": "Detailed Analysis",
+      "recommendations": "Personalized Recommendations"
+    },
+    "stats": {
+      "testsCompleted": "Tests Completed",
+      "psychologists": "Psychologists Trust Us",
+      "accuracy": "Accuracy"
+    },
+    "testimonials": {
+      "title": "What our users say",
+      "testimonial1": "An excellent tool for initial assessment of my clients.",
+      "testimonial2": "The results are accurate and the recommendations very helpful.",
+      "testimonial3": "Saves me a lot of time in initial consultations."
+    },
+    "cta": {
+      "title": "Ready for Your Stress Test?",
+      "description": "Start now and get a scientifically founded analysis of your stress level in just 5 minutes.",
+      "button": "Start Test Now"
+    }
+  },
+  "test": {
+    "title": "Stress Level Assessment",
+    "subtitle": "Answer the following 15 questions honestly and spontaneously",
+    "progress": "Question {{current}} of {{total}}",
+    "timeRemaining": "Estimated time: {{minutes}} minutes",
+    "questions": [
+      "I feel overwhelmed by my daily tasks",
+      "I have difficulty relaxing",
+      "I worry about things beyond my control",
+      "I feel tired even after getting enough sleep",
+      "I have difficulty concentrating",
+      "I react irritably to small problems",
+      "I have physical symptoms like headaches or tension",
+      "I avoid social situations or activities",
+      "I have difficulty falling asleep or staying asleep",
+      "I feel emotionally exhausted",
+      "I feel like I have no control over my life",
+      "I find it difficult to make decisions",
+      "I have frequent mood swings",
+      "I feel disconnected from others",
+      "I have recurring negative thoughts"
+    ],
+    "instructions": "Select the answer that best applies to you:",
+    "scale": {
+      "never": "Never",
+      "rarely": "Rarely",
+      "sometimes": "Sometimes",
+      "often": "Often",
+      "always": "Always"
+    },
+    "questions": [
+      "I feel overwhelmed by my daily tasks",
+      "I have difficulty relaxing",
+      "I worry about things that are beyond my control",
+      "I feel tired, even after getting enough sleep",
+      "I have difficulty concentrating",
+      "I react irritably to small problems",
+      "I have physical symptoms like headaches or muscle tension",
+      "I avoid social situations or activities",
+      "I have difficulty falling asleep or staying asleep",
+      "I feel emotionally exhausted",
+      "I feel like I have no control over my life",
+      "I frequently ruminate about problems",
+      "I feel time pressure, even with simple tasks",
+      "I have difficulty making decisions",
+      "I feel overwhelmed by my responsibilities"
+    ],
+    "navigation": {
+      "back": "Back",
+      "next": "Next",
+      "submit": "Complete Test",
+      "loading": "Analyzing..."
+    }
+  },
+  "results": {
+    "title": "Your Stress Test Results",
+    "score": "Your score: {{score}} out of 100 points",
+    "levels": {
+      "low": "Low Stress",
+      "moderate": "Moderate Stress",
+      "high": "High Stress",
+      "critical": "Critical Stress"
+    },
+    "interpretations": {
+      "low": "Your stress level is in the normal range. You seem to handle daily challenges well.",
+      "moderate": "Your stress level is slightly elevated. It would be advisable to take preventive measures.",
+      "high": "Your stress level is significantly elevated. We recommend seeking professional support.",
+      "critical": "Your stress level is critically high. Please contact a psychologist or doctor immediately."
+    },
+    "recommendations": {
+      "title": "Personalized Recommendations",
+      "low": [
+        "Maintain your current coping strategies",
+        "Practice relaxation techniques regularly",
+        "Focus on maintaining work-life balance"
+      ],
+      "moderate": [
+        "Implement daily stress management techniques",
+        "Review your workload and priorities",
+        "Seek social support from family and friends",
+        "Consider professional counseling"
+      ],
+      "high": [
+        "Immediate stress reduction measures required",
+        "Professional psychological support recommended",
+        "Review of current life and work situation needed",
+        "Practice stress management techniques daily"
+      ],
+      "critical": [
+        "Urgent professional help required",
+        "Immediate relief from stress factors necessary",
+        "Medical evaluation recommended",
+        "Inform trusted people about your situation"
+      ]
+    },
+    "emailCapture": {
+      "title": "Get Results by Email",
+      "description": "Enter your email address to receive your test results:",
+      "placeholder": "your.email@example.com",
+      "consent": "I agree that my email address may be used to send the test results.",
+      "submit": "Request Analysis",
+      "privacy": "Your data will be treated confidentially and will not be shared with third parties."
+    },
+    "detailedAnalysis": {
+      "title": "Get Detailed Analysis",
+      "description": "Receive a comprehensive 15-page analysis of your stress level with specific action recommendations.",
+      "features": [
+        "Detailed evaluation of all 15 questions",
+        "Personalized stress management strategies",
+        "Resources and exercises for daily life",
+        "Recommendations for additional professional help"
+      ],
+      "price": "Only €19",
+      "cta": "Get Detailed Analysis"
+    },
+    "actions": {
+      "repeatTest": "Repeat Test",
+      "backHome": "Back to Home"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Try again",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "footer": {
+    "copyright": "© 2024 SAMEBI International. All rights reserved.",
+    "developed": "Professional tools for psychologists",
+    "contact": "📧 support@samebi.net"
+  }
+}

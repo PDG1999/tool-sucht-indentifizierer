@@ -1,0 +1,41 @@
+# Generated for Psychologie Heute
+# Partner ID: psychologie-heute
+# Generated: 2025-09-30T13:57:15.625Z
+
+{
+  version: 3.8,
+  services: {
+    psychologie-heute-app: {
+      build: {
+        context: .,
+        dockerfile: Dockerfile,
+        args: {
+          VITE_PARTNER_ID: psychologie-heute,
+          VITE_COMPANY_NAME: Psychologie Heute,
+          VITE_SUPPORT_EMAIL: redaktion@psychologie-heute.de,
+          VITE_DOMAIN: stress-test.psychologie-heute.de,
+          VITE_DEFAULT_LANGUAGE: de,
+          VITE_SUPPORTED_LANGUAGES: de,
+          VITE_SUPPORTED_TOOLS: stress-test,burnout-test,
+          VITE_GA_TRACKING_ID: G-PSYCHOLOGIE-HEUTE,
+          VITE_FACEBOOK_PIXEL: PSYCHOLOGIE-HEUTE-PIXEL,
+          VITE_DETAILED_ANALYSIS_PRICE: 24,90€,
+          VITE_CURRENCY: EUR
+        }
+      },
+      container_name: psychologie-heute-stress-test,
+      ports: [
+        80:80
+      ],
+      restart: unless-stopped,
+      environment: [
+        NODE_ENV=production
+      ],
+      labels: {
+        coolify.managed: true,
+        coolify.name: Psychologie Heute Stress Test,
+        coolify.domain: stress-test.psychologie-heute.de
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "partnerId": "partner-template",
+  "partnerName": "Partner Template",
+  "domain": "partner.example.com",
+  "subdomain": "partner",
+  "branding": {
+    "companyName": "Partner Psychology Center",
+    "logo": "/partner-logo.svg",
+    "favicon": "/partner-favicon.ico",
+    "colors": {
+      "primary": "#2563eb",
+      "secondary": "#64748b",
+      "accent": "#3b82f6",
+      "success": "#16a34a",
+      "warning": "#d97706",
+      "error": "#dc2626"
+    },
+    "fonts": {
+      "heading": "Inter, system-ui, sans-serif",
+      "body": "Inter, system-ui, sans-serif"
+    }
+  },
+  "contact": {
+    "email": "contact@partner.example.com",
+    "phone": "+XX-XXX-XXX-XXXX",
+    "address": "123 Psychology Street, City, Country",
+    "website": "https://partner.example.com"
+  },
+  "features": {
+    "whiteLabel": true,
+    "customBranding": true,
+    "customDomain": false,
+    "analytics": false,
+    "apiAccess": false,
+    "multiLanguage": true,
+    "customQuestions": false
+  },
+  "analytics": {},
+  "pricing": {
+    "model": "basic",
+    "detailedAnalysisPrice": "19€",
+    "currency": "EUR"
+  },
+  "languages": ["es", "de", "en"],
+  "defaultLanguage": "es",
+  "tools": ["stress-test"]
+}

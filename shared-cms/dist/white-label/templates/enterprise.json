@@ -1,0 +1,50 @@
+{
+  "partnerId": "partner-enterprise-template",
+  "partnerName": "Enterprise Partner Template",
+  "domain": "enterprise-partner.example.com",
+  "branding": {
+    "companyName": "Enterprise Psychology Corporation",
+    "logo": "/enterprise-logo.svg",
+    "favicon": "/enterprise-favicon.ico",
+    "colors": {
+      "primary": "#059669",
+      "secondary": "#64748b",
+      "accent": "#10b981",
+      "success": "#16a34a",
+      "warning": "#d97706",
+      "error": "#dc2626"
+    },
+    "fonts": {
+      "heading": "Montserrat, sans-serif",
+      "body": "Open Sans, system-ui, sans-serif"
+    }
+  },
+  "contact": {
+    "email": "enterprise@partner.example.com",
+    "phone": "+XX-XXX-XXX-XXXX",
+    "address": "789 Enterprise Boulevard, Corporate City, Country",
+    "website": "https://enterprise-partner.example.com"
+  },
+  "features": {
+    "whiteLabel": true,
+    "customBranding": true,
+    "customDomain": true,
+    "analytics": true,
+    "apiAccess": true,
+    "multiLanguage": true,
+    "customQuestions": true
+  },
+  "analytics": {
+    "googleAnalytics": "G-ENTERPRISE-XXXX",
+    "facebookPixel": "ENTERPRISE-PIXEL-ID",
+    "customTracking": "CUSTOM-ENTERPRISE-TRACKING"
+  },
+  "pricing": {
+    "model": "enterprise",
+    "detailedAnalysisPrice": "49€",
+    "currency": "EUR"
+  },
+  "languages": ["es", "de", "en"],
+  "defaultLanguage": "de",
+  "tools": ["stress-test", "burnout-test", "personality-test", "content-generator", "rate-calculator", "location-analyzer"]
+}

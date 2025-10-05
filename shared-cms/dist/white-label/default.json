@@ -1,0 +1,47 @@
+{
+  "partnerId": "samebi-default",
+  "partnerName": "SAMEBI",
+  "domain": "samebi.net",
+  "branding": {
+    "companyName": "SAMEBI",
+    "logo": "/logo.svg",
+    "favicon": "/favicon.ico",
+    "colors": {
+      "primary": "#2563eb",
+      "secondary": "#64748b",
+      "accent": "#3b82f6",
+      "success": "#16a34a",
+      "warning": "#d97706",
+      "error": "#dc2626"
+    },
+    "fonts": {
+      "heading": "Inter, system-ui, sans-serif",
+      "body": "Inter, system-ui, sans-serif"
+    }
+  },
+  "contact": {
+    "email": "support@samebi.net",
+    "phone": "+49-XXX-XXX-XXXX",
+    "website": "https://samebi.net"
+  },
+  "features": {
+    "whiteLabel": true,
+    "customBranding": true,
+    "customDomain": true,
+    "analytics": true,
+    "apiAccess": true,
+    "multiLanguage": true,
+    "customQuestions": true
+  },
+  "analytics": {
+    "googleAnalytics": "G-XXXXXXXXXX"
+  },
+  "pricing": {
+    "model": "enterprise",
+    "detailedAnalysisPrice": "19€",
+    "currency": "EUR"
+  },
+  "languages": ["es", "de", "en"],
+  "defaultLanguage": "es",
+  "tools": ["stress-test", "burnout-test", "personality-test", "content-generator", "rate-calculator", "location-analyzer"]
+}

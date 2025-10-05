@@ -1,0 +1,49 @@
+{
+  "partnerId": "partner-premium-template",
+  "partnerName": "Premium Partner Template",
+  "domain": "premium-partner.example.com",
+  "branding": {
+    "companyName": "Premium Psychology Institute",
+    "logo": "/premium-logo.svg",
+    "favicon": "/premium-favicon.ico",
+    "colors": {
+      "primary": "#7c3aed",
+      "secondary": "#64748b",
+      "accent": "#8b5cf6",
+      "success": "#16a34a",
+      "warning": "#d97706",
+      "error": "#dc2626"
+    },
+    "fonts": {
+      "heading": "Playfair Display, serif",
+      "body": "Inter, system-ui, sans-serif"
+    }
+  },
+  "contact": {
+    "email": "info@premium-partner.example.com",
+    "phone": "+XX-XXX-XXX-XXXX",
+    "address": "456 Premium Avenue, Elite City, Country",
+    "website": "https://premium-partner.example.com"
+  },
+  "features": {
+    "whiteLabel": true,
+    "customBranding": true,
+    "customDomain": true,
+    "analytics": true,
+    "apiAccess": true,
+    "multiLanguage": true,
+    "customQuestions": false
+  },
+  "analytics": {
+    "googleAnalytics": "G-PREMIUM-XXXX",
+    "facebookPixel": "PREMIUM-PIXEL-ID"
+  },
+  "pricing": {
+    "model": "premium",
+    "detailedAnalysisPrice": "29€",
+    "currency": "EUR"
+  },
+  "languages": ["es", "de", "en"],
+  "defaultLanguage": "en",
+  "tools": ["stress-test", "burnout-test", "personality-test"]
+}

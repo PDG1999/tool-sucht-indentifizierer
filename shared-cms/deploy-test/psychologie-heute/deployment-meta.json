@@ -1,0 +1,23 @@
+{
+  "partnerId": "psychologie-heute",
+  "partnerName": "Psychologie Heute",
+  "domain": "stress-test.psychologie-heute.de",
+  "tools": [
+    "stress-test",
+    "burnout-test"
+  ],
+  "languages": [
+    "de"
+  ],
+  "features": {
+    "whiteLabel": true,
+    "customBranding": true,
+    "customDomain": true,
+    "analytics": true,
+    "apiAccess": true,
+    "multiLanguage": false,
+    "customQuestions": false
+  },
+  "generatedAt": "2025-09-30T13:57:15.625Z",
+  "version": "1.0.0"
+}

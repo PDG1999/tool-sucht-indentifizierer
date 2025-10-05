@@ -1,0 +1,49 @@
+{
+  "partnerId": "mental-health-madrid",
+  "partnerName": "Mental Health Madrid",
+  "domain": "test-estres.mentalhealthmadrid.es",
+  "branding": {
+    "companyName": "Mental Health Madrid",
+    "logo": "/partners/mhm-logo.svg",
+    "favicon": "/partners/mhm-favicon.ico",
+    "colors": {
+      "primary": "#dc2626",
+      "secondary": "#64748b",
+      "accent": "#ef4444",
+      "success": "#16a34a",
+      "warning": "#d97706",
+      "error": "#dc2626"
+    },
+    "fonts": {
+      "heading": "Nunito, sans-serif",
+      "body": "Nunito, system-ui, sans-serif"
+    }
+  },
+  "contact": {
+    "email": "contacto@mentalhealthmadrid.es",
+    "phone": "+34-91-1234567",
+    "address": "Calle de Alcalá 123, 28009 Madrid, España",
+    "website": "https://www.mentalhealthmadrid.es"
+  },
+  "features": {
+    "whiteLabel": true,
+    "customBranding": true,
+    "customDomain": true,
+    "analytics": true,
+    "apiAccess": true,
+    "multiLanguage": true,
+    "customQuestions": true
+  },
+  "analytics": {
+    "googleAnalytics": "G-MHM-MADRID",
+    "facebookPixel": "MHM-PIXEL-ID"
+  },
+  "pricing": {
+    "model": "enterprise",
+    "detailedAnalysisPrice": "25€",
+    "currency": "EUR"
+  },
+  "languages": ["es", "en"],
+  "defaultLanguage": "es",
+  "tools": ["stress-test", "burnout-test", "personality-test"]
+}

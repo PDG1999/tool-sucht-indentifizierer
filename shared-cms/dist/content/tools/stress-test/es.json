@@ -1,0 +1,179 @@
+{
+  "toolId": "stress-test",
+  "version": "1.0.0",
+  "lastUpdated": "2024-12-30T00:00:00Z",
+  "meta": {
+    "title": "Test de Estrés | Evaluación Profesional - SAMEBI",
+    "description": "Test de estrés científicamente validado para psicólogos. Evaluación gratuita en 5 minutos con recomendaciones personalizadas.",
+    "keywords": "test estrés, evaluación psicológica, burnout, ansiedad, psicólogos españa"
+  },
+  "nav": {
+    "home": "Inicio",
+    "test": "Test de Estrés",
+    "results": "Resultados",
+    "contact": "Contacto",
+    "privacy": "Privacidad",
+    "terms": "Términos"
+  },
+  "landing": {
+    "title": "🧠 Test de Estrés Avanzado",
+    "subtitle": "Científicamente Validado",
+    "description": "Evalúa tu nivel de estrés en solo 5 minutos con nuestro test profesional basado en evidencia científica. Desarrollado por psicólogos para psicólogos.",
+    "startTest": "Comenzar Test Ahora",
+    "features": {
+      "scientific": "Científicamente Validado",
+      "quick": "Solo 5 Minutos",
+      "detailed": "Análisis Detallado",
+      "recommendations": "Recomendaciones Personalizadas"
+    },
+    "stats": {
+      "testsCompleted": "Tests Completados",
+      "psychologists": "Psicólogos Confían en Nosotros",
+      "accuracy": "Precisión"
+    },
+    "testimonials": {
+      "title": "Lo que dicen los psicólogos",
+      "testimonial1": "Una herramienta excelente para la evaluación inicial de mis clientes.",
+      "testimonial2": "Los resultados son precisos y las recomendaciones muy útiles.",
+      "testimonial3": "Me ahorra mucho tiempo en la consulta inicial."
+    },
+    "cta": {
+      "title": "¿Listo para tu Test de Estrés?",
+      "description": "Comienza ahora y obtén en solo 5 minutos un análisis científicamente fundado de tu nivel de estrés.",
+      "button": "Comenzar Test Ahora"
+    }
+  },
+  "test": {
+    "title": "Evaluación de Nivel de Estrés",
+    "subtitle": "Responde las siguientes 15 preguntas de manera honesta y espontánea",
+    "progress": "Pregunta {{current}} de {{total}}",
+    "timeRemaining": "Tiempo estimado: {{minutes}} minutos",
+    "questions": [
+      "Me siento abrumado por mis tareas diarias",
+      "Tengo dificultades para relajarme",
+      "Me preocupo por cosas fuera de mi control",
+      "Me siento cansado, incluso después de dormir lo suficiente",
+      "Tengo dificultades para concentrarme",
+      "Reacciono con irritación a problemas pequeños",
+      "Tengo síntomas físicos como dolores de cabeza o tensión",
+      "Evito situaciones sociales o actividades",
+      "Tengo dificultades para conciliar el sueño o mantenerlo",
+      "Me siento emocionalmente agotado",
+      "Siento que no tengo control sobre mi vida",
+      "Me resulta difícil tomar decisiones",
+      "Tengo cambios frecuentes de humor",
+      "Me siento desconectado de otros",
+      "Tengo pensamientos negativos recurrentes"
+    ],
+    "instructions": "Selecciona la respuesta que mejor se aplique a ti:",
+    "scale": {
+      "never": "Nunca",
+      "rarely": "Raramente",
+      "sometimes": "A veces",
+      "often": "A menudo",
+      "always": "Siempre"
+    },
+    "questions": [
+      "Me siento abrumado/a por mis tareas diarias",
+      "Tengo dificultades para relajarme",
+      "Me preocupo por cosas que están fuera de mi control",
+      "Me siento cansado/a, incluso después de dormir lo suficiente",
+      "Tengo dificultades para concentrarme",
+      "Reacciono con irritabilidad ante pequeños problemas",
+      "Tengo síntomas físicos como dolores de cabeza o tensión muscular",
+      "Evito situaciones sociales o actividades",
+      "Tengo dificultades para conciliar el sueño o mantenerme dormido/a",
+      "Me siento emocionalmente agotado/a",
+      "Siento que no tengo control sobre mi vida",
+      "Rumio frecuentemente sobre los problemas",
+      "Me siento presionado/a por el tiempo, incluso en tareas simples",
+      "Tengo dificultades para tomar decisiones",
+      "Me siento abrumado/a por mis responsabilidades"
+    ],
+    "navigation": {
+      "back": "Atrás",
+      "next": "Siguiente",
+      "submit": "Completar Test",
+      "loading": "Cargando..."
+    }
+  },
+  "results": {
+    "title": "Tus Resultados del Test de Estrés",
+    "score": "Tu puntuación: {{score}} de 100 puntos",
+    "levels": {
+      "low": "Estrés Bajo",
+      "moderate": "Estrés Moderado",
+      "high": "Estrés Alto",
+      "critical": "Estrés Crítico"
+    },
+    "interpretations": {
+      "low": "Tu nivel de estrés está en el rango normal. Pareces manejar bien los desafíos diarios.",
+      "moderate": "Tu nivel de estrés está ligeramente elevado. Sería recomendable tomar medidas preventivas.",
+      "high": "Tu nivel de estrés está significativamente elevado. Te recomendamos buscar apoyo profesional.",
+      "critical": "Tu nivel de estrés es críticamente alto. Por favor, contacta inmediatamente a un psicólogo o médico."
+    },
+    "recommendations": {
+      "title": "Recomendaciones Personalizadas",
+      "low": [
+        "Mantén tus estrategias actuales de afrontamiento",
+        "Practica técnicas de relajación regularmente",
+        "Enfócate en mantener el equilibrio trabajo-vida"
+      ],
+      "moderate": [
+        "Implementa técnicas diarias de manejo del estrés",
+        "Revisa tu carga de trabajo y prioridades",
+        "Busca apoyo social de familia y amigos",
+        "Considera asesoramiento profesional"
+      ],
+      "high": [
+        "Se requieren medidas inmediatas de reducción del estrés",
+        "Se recomienda apoyo psicológico profesional",
+        "Revisa tu situación actual de vida y trabajo",
+        "Practica técnicas de manejo del estrés diariamente"
+      ],
+      "critical": [
+        "Se requiere ayuda profesional urgente",
+        "Necesario alivio inmediato de los factores de estrés",
+        "Se recomienda evaluación médica",
+        "Informa a personas de confianza sobre tu situación"
+      ]
+    },
+    "emailCapture": {
+      "title": "Recibir Resultados por Email",
+      "description": "Ingresa tu dirección de email para recibir tus resultados del test:",
+      "placeholder": "tu.email@ejemplo.com",
+      "consent": "Acepto que mi dirección de email sea utilizada para enviar los resultados del test.",
+      "submit": "Enviar",
+      "privacy": "Tus datos serán tratados de forma confidencial y no serán compartidos con terceros."
+    },
+    "detailedAnalysis": {
+      "title": "Obtener Análisis Detallado",
+      "description": "Recibe un análisis completo de 15 páginas de tu nivel de estrés con recomendaciones específicas de acción.",
+      "features": [
+        "Evaluación detallada de las 15 preguntas",
+        "Estrategias personalizadas de manejo del estrés",
+        "Recursos y ejercicios para el día a día",
+        "Recomendaciones para ayuda profesional adicional"
+      ],
+      "price": "Solo 19€",
+      "cta": "Obtener Análisis Detallado"
+    },
+    "actions": {
+      "repeatTest": "Repetir Test",
+      "backHome": "Volver al Inicio"
+    }
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "retry": "Intentar de nuevo",
+    "close": "Cerrar",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  },
+  "footer": {
+    "copyright": "© 2024 SAMEBI España. Todos los derechos reservados.",
+    "developed": "Herramientas profesionales para psicólogos",
+    "contact": "📧 soporte@samebi.net"
+  }
+}

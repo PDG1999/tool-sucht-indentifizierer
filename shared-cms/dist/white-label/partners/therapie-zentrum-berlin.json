@@ -1,0 +1,48 @@
+{
+  "partnerId": "therapie-zentrum-berlin",
+  "partnerName": "Therapie Zentrum Berlin",
+  "domain": "stress-check.therapie-zentrum-berlin.de",
+  "branding": {
+    "companyName": "Therapie Zentrum Berlin",
+    "logo": "/partners/tzb-logo.svg",
+    "favicon": "/partners/tzb-favicon.ico",
+    "colors": {
+      "primary": "#0f766e",
+      "secondary": "#64748b",
+      "accent": "#14b8a6",
+      "success": "#16a34a",
+      "warning": "#d97706",
+      "error": "#dc2626"
+    },
+    "fonts": {
+      "heading": "Source Sans Pro, sans-serif",
+      "body": "Source Sans Pro, system-ui, sans-serif"
+    }
+  },
+  "contact": {
+    "email": "info@therapie-zentrum-berlin.de",
+    "phone": "+49-30-12345678",
+    "address": "Unter den Linden 1, 10117 Berlin, Deutschland",
+    "website": "https://www.therapie-zentrum-berlin.de"
+  },
+  "features": {
+    "whiteLabel": true,
+    "customBranding": true,
+    "customDomain": true,
+    "analytics": true,
+    "apiAccess": false,
+    "multiLanguage": true,
+    "customQuestions": false
+  },
+  "analytics": {
+    "googleAnalytics": "G-TZB-ANALYTICS"
+  },
+  "pricing": {
+    "model": "basic",
+    "detailedAnalysisPrice": "19,90€",
+    "currency": "EUR"
+  },
+  "languages": ["de", "en"],
+  "defaultLanguage": "de",
+  "tools": ["stress-test", "personality-test"]
+}

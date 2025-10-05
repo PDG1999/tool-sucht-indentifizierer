@@ -1,0 +1,53 @@
+import { ToolContent, Language, ToolId, WhiteLabelConfig } from './types.js';
+export declare class TranslationManager {
+    private static instance;
+    private currentLanguage;
+    private currentTool;
+    private currentPartner;
+    private content?;
+    private partnerConfig?;
+    private constructor();
+    static getInstance(): TranslationManager;
+    initialize(toolId: ToolId, language: Language, partnerId?: string): void;
+    getContent(): ToolContent;
+    getPartnerConfig(): WhiteLabelConfig | undefined;
+    t(key: string): string;
+    interpolate(text: string, values: Record<string, string | number>): string;
+    getCurrentLanguage(): Language;
+    getCurrentTool(): ToolId;
+    getCurrentPartner(): string | undefined;
+    switchLanguage(language: Language): void;
+    switchTool(toolId: ToolId): void;
+    getAvailableLanguages(): Language[];
+    getAvailableTools(): ToolId[];
+    isLanguageSupported(language: Language): boolean;
+    isToolSupported(toolId: ToolId): boolean;
+    getCompanyName(): string;
+    getSupportEmail(): string;
+    getDomain(): string;
+    getCurrency(): string;
+    getDetailedAnalysisPrice(): string;
+    getLogo(): string;
+    getFavicon(): string;
+    getAnalyticsId(): string | undefined;
+    isFeatureEnabled(feature: keyof WhiteLabelConfig['features']): boolean;
+    generateMetaTags(): {
+        title: string;
+        description: string;
+        keywords: string;
+        canonical: string;
+    };
+    generateStructuredData(): object;
+    private getLanguageName;
+    private getAudienceType;
+    reload(): void;
+    getStatus(): {
+        initialized: boolean;
+        tool: ToolId | undefined;
+        language: Language | undefined;
+        partner: string | undefined;
+        hasContent: boolean;
+        hasPartnerConfig: boolean;
+    };
+}
+export declare const translationManager: TranslationManager;

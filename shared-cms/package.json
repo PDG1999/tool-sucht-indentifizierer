@@ -1,0 +1,61 @@
+{
+  "name": "@samebi/shared-cms",
+  "version": "1.0.0",
+  "description": "Zentrales Content Management System für alle SAMEBI Tools mit White-Label-Support",
+  "main": "content-engine/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "validate": "node scripts/validate-content.js",
+    "deploy": "node scripts/deploy-partner.js",
+    "preload": "node scripts/preload-content.js",
+    "test": "node --test",
+    "lint": "eslint content-engine/ --ext .ts",
+    "clean": "rm -rf dist/"
+  },
+  "keywords": [
+    "cms",
+    "content-management",
+    "white-label",
+    "multi-language",
+    "samebi",
+    "psychology-tools",
+    "partner-licensing",
+    "revenue-sharing"
+  ],
+  "author": "SAMEBI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PDG1999/samebi-shared-cms.git"
+  },
+  "homepage": "https://samebi.net",
+  "dependencies": {
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "eslint": "^8.45.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./content-engine/index.js",
+      "types": "./content-engine/index.d.ts"
+    },
+    "./types": {
+      "import": "./content-engine/types.js",
+      "types": "./content-engine/types.d.ts"
+    }
+  },
+  "files": [
+    "content-engine/",
+    "content/",
+    "white-label/",
+    "themes/",
+    "scripts/"
+  ]
+}

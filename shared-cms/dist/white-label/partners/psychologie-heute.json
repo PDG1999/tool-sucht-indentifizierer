@@ -1,0 +1,49 @@
+{
+  "partnerId": "psychologie-heute",
+  "partnerName": "Psychologie Heute",
+  "domain": "stress-test.psychologie-heute.de",
+  "branding": {
+    "companyName": "Psychologie Heute",
+    "logo": "/partners/psychologie-heute-logo.svg",
+    "favicon": "/partners/psychologie-heute-favicon.ico",
+    "colors": {
+      "primary": "#1e40af",
+      "secondary": "#64748b",
+      "accent": "#3b82f6",
+      "success": "#16a34a",
+      "warning": "#d97706",
+      "error": "#dc2626"
+    },
+    "fonts": {
+      "heading": "Roboto, sans-serif",
+      "body": "Roboto, system-ui, sans-serif"
+    }
+  },
+  "contact": {
+    "email": "redaktion@psychologie-heute.de",
+    "phone": "+49-621-7061-0",
+    "address": "Julius-Hatry-Straße 1, 68163 Mannheim, Deutschland",
+    "website": "https://www.psychologie-heute.de"
+  },
+  "features": {
+    "whiteLabel": true,
+    "customBranding": true,
+    "customDomain": true,
+    "analytics": true,
+    "apiAccess": true,
+    "multiLanguage": false,
+    "customQuestions": false
+  },
+  "analytics": {
+    "googleAnalytics": "G-PSYCHOLOGIE-HEUTE",
+    "facebookPixel": "PSYCHOLOGIE-HEUTE-PIXEL"
+  },
+  "pricing": {
+    "model": "premium",
+    "detailedAnalysisPrice": "24,90€",
+    "currency": "EUR"
+  },
+  "languages": ["de"],
+  "defaultLanguage": "de",
+  "tools": ["stress-test", "burnout-test"]
+}

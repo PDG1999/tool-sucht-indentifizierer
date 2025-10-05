@@ -1,0 +1,32 @@
+{
+  "name": "Psychologie Heute - Stress Test",
+  "description": "White-label stress test for Psychologie Heute",
+  "repository": "https://github.com/PDG1999/tool-stress-checker.git",
+  "branch": "main",
+  "buildCommand": "npm run build",
+  "startCommand": "npm start",
+  "port": 80,
+  "domains": [
+    "stress-test.psychologie-heute.de"
+  ],
+  "environmentVariables": {
+    "VITE_PARTNER_ID": "psychologie-heute",
+    "VITE_COMPANY_NAME": "Psychologie Heute",
+    "VITE_SUPPORT_EMAIL": "redaktion@psychologie-heute.de",
+    "VITE_DOMAIN": "stress-test.psychologie-heute.de",
+    "VITE_DEFAULT_LANGUAGE": "de",
+    "VITE_SUPPORTED_LANGUAGES": "de",
+    "VITE_SUPPORTED_TOOLS": "stress-test,burnout-test",
+    "VITE_GA_TRACKING_ID": "G-PSYCHOLOGIE-HEUTE",
+    "VITE_FACEBOOK_PIXEL": "PSYCHOLOGIE-HEUTE-PIXEL",
+    "VITE_DETAILED_ANALYSIS_PRICE": "24,90€",
+    "VITE_CURRENCY": "EUR"
+  },
+  "healthCheck": {
+    "enabled": true,
+    "path": "/health",
+    "interval": 30,
+    "timeout": 10,
+    "retries": 3
+  }
+}
