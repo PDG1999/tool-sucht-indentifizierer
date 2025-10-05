@@ -36,43 +36,34 @@ dig api-check.samebi.net
 
 ## ✅ Phase 2: Datenbank Setup
 
-### 1. In Coolify PostgreSQL-Datenbank öffnen
+### ⚡ AUTOMATISCH - Nichts zu tun!
 
-Gehe zu: `postgresql-database-nsgccoc4scg8g444c400c840`
+Die Datenbank wird **automatisch beim ersten Backend-Start** eingerichtet:
+- ✅ Alle Tabellen werden erstellt
+- ✅ Indexes werden angelegt
+- ✅ Demo-Accounts werden erstellt
 
-### 2. Terminal öffnen und Schema erstellen
+**Du musst nichts manuell machen!** 🎉
 
-Kopiere den kompletten Inhalt von:
-```
-backend/src/migrations/DEPLOY_ALL.sql
-```
-
-Füge ihn in das PostgreSQL-Terminal ein und führe aus.
-
-### 3. Demo-Accounts erstellen
-
-Kopiere den Inhalt von:
-```
-backend/src/migrations/CREATE_DEMO_ACCOUNTS.sql
-```
-
-Füge ihn in das PostgreSQL-Terminal ein und führe aus.
-
-### 4. Login-Daten notieren
+### Login-Daten (automatisch erstellt):
 
 ```
 Berater-Account:
-  Email: berater@samebi.net
-  Passwort: Demo2025!
+  📧 Email: berater@samebi.net
+  🔒 Passwort: Demo2025!
 
 Supervisor-Account:
-  Email: supervisor@samebi.net
-  Passwort: Supervisor2025!
+  📧 Email: supervisor@samebi.net
+  🔒 Passwort: Supervisor2025!
 ```
+
+**Hinweis:** Die Migrations laufen beim ersten Backend-Start. Prüfe die Logs in Coolify um zu sehen:
+- `✅ Database schema created successfully!` (wenn neu erstellt)
+- `✅ Database schema already exists.` (wenn bereits vorhanden)
 
 ---
 
-## ✅ Phase 3: Backend API deployen
+## ✅ Phase 2: Backend API deployen
 
 ### In Coolify → New Resource → Application
 
@@ -124,7 +115,7 @@ api-check.samebi.net
 
 ---
 
-## ✅ Phase 4: Frontend (Deutsch) deployen
+## ✅ Phase 3: Frontend (Deutsch) deployen
 
 ### In Coolify → New Resource → Application
 
@@ -136,19 +127,24 @@ Type: Dockerfile
 
 **2. Source:**
 ```
-Repository: https://github.com/PDG1999/tool-sucht-identifizieren-anonym
+Git Repository URL: https://github.com/PDG1999/tool-sucht-identifizieren-anonym
 Branch: main
-Base Directory: .
-Dockerfile: Dockerfile
 ```
 
-**3. Build Settings:**
+**3. Build Pack:**
+```
+Build Pack: Dockerfile
+Dockerfile Location: Dockerfile
+Base Directory: . (oder leer lassen)
+```
+
+**4. Ports & Health Check:**
 ```
 Port: 80
 Health Check Path: /
 ```
 
-**4. Environment Variables:**
+**5. Environment Variables:**
 
 ```env
 NODE_ENV=production
@@ -159,16 +155,20 @@ VITE_SUPPORT_EMAIL=support@samebi.net
 VITE_COMPANY_NAME=SAMEBI Deutschland
 ```
 
-**5. Domain:**
+**6. Domain:**
 ```
 check.samebi.net
 ```
 
-**6. Deploy starten!**
+**WICHTIG:** In Coolify bei Domain Settings:
+- ✅ Generate Domain SSL aktivieren
+- ✅ Warte 2-5 Minuten nach Deploy für SSL-Zertifikat
+
+**7. Deploy starten!**
 
 ---
 
-## ✅ Phase 5: Testing
+## ✅ Phase 4: Testing & SSL-Zertifikat
 
 ### 1. Backend Health Check
 

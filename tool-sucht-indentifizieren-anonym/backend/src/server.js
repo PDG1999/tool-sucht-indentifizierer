@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const { connectDB } = require('./config/database');
+const { runMigrations } = require('./config/migrations');
 require('dotenv').config();
 
 const app = express();
@@ -69,18 +70,23 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Start server with DB connection
+// Start server with DB connection and migrations
 const startServer = async () => {
   try {
     // Test database connection
     await connectDB();
     
+    // Run migrations (create tables & demo accounts if needed)
+    await runMigrations();
+    
     // Start Express server
     app.listen(PORT, () => {
-      console.log(`🚀 SAMEBI API Server läuft auf Port ${PORT}`);
-      console.log(`📊 Health Check: http://localhost:${PORT}/health`);
-      console.log(`🔗 CORS Origin: ${process.env.CORS_ORIGIN || 'http://localhost:3004'}`);
-      console.log(`🗄️  Database: Connected successfully`);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('🚀 SAMEBI API Server läuft auf Port', PORT);
+      console.log('📊 Health Check:', `http://localhost:${PORT}/health`);
+      console.log('🔗 CORS Origin:', process.env.CORS_ORIGIN || 'http://localhost:3004');
+      console.log('🗄️  Database: Connected & Ready');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
