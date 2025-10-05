@@ -4,9 +4,28 @@ const TestResult = require('../models/TestResult');
 const Client = require('../models/Client');
 const { authenticateToken } = require('../middleware/auth');
 
-// Get all test results for a counselor
+// Get all test results for a counselor (or ALL for supervisor)
 router.get('/', authenticateToken, async (req, res) => {
   try {
+    // If user is supervisor, return ALL test results
+    if (req.user.role === 'supervisor') {
+      const { pool } = require('../config/database');
+      const result = await pool.query(`
+        SELECT 
+          tr.*,
+          c.name as client_name,
+          c.email as client_email,
+          co.name as counselor_name,
+          co.email as counselor_email
+        FROM test_results tr
+        LEFT JOIN clients c ON tr.client_id = c.id
+        LEFT JOIN counselors co ON tr.counselor_id = co.id
+        ORDER BY tr.created_at DESC
+      `);
+      return res.json(result.rows);
+    }
+    
+    // Otherwise, return only tests for this counselor
     const testResults = await TestResult.getAllByCounselor(req.user.id);
     res.json(testResults);
   } catch (error) {
