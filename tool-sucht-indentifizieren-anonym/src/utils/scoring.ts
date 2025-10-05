@@ -1,4 +1,5 @@
 import { questions, sections, addictionTypes } from '@/data/questions';
+import { analyzeAddictionDirection, getAddictionDirectionDescription, getDirectionSpecificRecommendations, AddictionDirection } from './addictionAnalysis';
 
 export interface Response {
   questionId: string;
@@ -25,6 +26,9 @@ export interface ProfessionalScores {
   riskLevel: 'Niedrig' | 'Mittel' | 'Hoch' | 'Kritisch';
   consistency: number;
   confidence: number;
+  addictionDirection?: AddictionDirection; // Neue detaillierte Suchtrichtung-Analyse
+  directionDescription?: string; // Textuelle Beschreibung
+  directionRecommendations?: string[]; // Spezifische Empfehlungen
 }
 
 // Öffentliche Scores (für Teilnehmer sichtbar)
@@ -150,6 +154,11 @@ export function calculateProfessionalScores(responses: Response[]): Professional
 
   const overall = Math.round((gambling + alcohol + substances + shopping + digital) / 5);
 
+  // Neue: Analysiere Suchtrichtung im Detail
+  const addictionDirection = analyzeAddictionDirection(responses);
+  const directionDescription = getAddictionDirectionDescription(addictionDirection);
+  const directionRecommendations = getDirectionSpecificRecommendations(addictionDirection);
+
   return {
     gambling,
     alcohol,
@@ -160,7 +169,10 @@ export function calculateProfessionalScores(responses: Response[]): Professional
     primaryConcern,
     riskLevel,
     consistency,
-    confidence
+    confidence,
+    addictionDirection,
+    directionDescription,
+    directionRecommendations
   };
 }
 

@@ -1,158 +1,264 @@
-import { Response, ProfessionalScores } from './scoring';
+import { Response } from './scoring';
+import { questions } from '../data/questions';
+
+/**
+ * Identifiziert die primäre und sekundäre Suchtrichtung basierend auf den Antworten
+ */
 
 export interface AddictionDirection {
-  primary: string;
-  primaryScore: number;
-  secondary: string | null;
-  secondaryScore: number | null;
-  confidence: number;
-  indicators: {
-    gambling: number;
-    substance: number;
-    digital: number;
-    alcohol: number;
-    shopping: number;
+  primary: {
+    type: string;
+    confidence: number; // 0-100
+    indicators: string[];
   };
-  riskPattern: string;
-  coMorbidity: boolean;
+  secondary?: {
+    type: string;
+    confidence: number;
+    indicators: string[];
+  };
+  patterns: {
+    substanceBased: number; // Score für stoffgebundene Süchte
+    behavioralBased: number; // Score für Verhaltenssüchte
+    polyaddiction: boolean; // Mehrere Süchte gleichzeitig
+  };
 }
 
-/**
- * Erkennt die Haupt-Suchtrichtung basierend auf den Antworten
- */
-export const detectAddictionDirection = (
-  responses: Response[], 
-  proScores: ProfessionalScores
-): AddictionDirection => {
-  // Kategorien nach Score sortieren
-  const sortedCategories = [...proScores.categories].sort((a, b) => b.score - a.score);
-  
-  // Primäre und sekundäre Richtung
-  const primary = sortedCategories[0];
-  const secondary = sortedCategories[1].score > 50 ? sortedCategories[1] : null;
-  
-  // Spezifische Indikatoren berechnen
-  const indicators = {
-    gambling: calculateIndicator(responses, ['f3_8', 'f3_9', 'f3_10', 'f2_7']),
-    substance: calculateIndicator(responses, ['f4_9', 'f4_10', 'f5_9', 'f5_10']),
-    digital: calculateIndicator(responses, ['f1_7', 'f3_1', 'f3_2', 'f4_1']),
-    alcohol: calculateIndicator(responses, ['f4_8', 'f5_8', 'f2_8']),
-    shopping: calculateIndicator(responses, ['f2_6', 'f2_7', 'f3_7']),
-  };
-  
-  // Risiko-Muster erkennen
-  const riskPattern = detectRiskPattern(indicators);
-  
-  // Ko-Morbidität prüfen
-  const coMorbidity = sortedCategories.filter(c => c.score > 50).length > 1;
-  
-  // Konfidenz berechnen (wie sicher sind wir über die primäre Richtung)
-  const confidence = primary.score / 100;
-  
-  return {
-    primary: primary.name,
-    primaryScore: primary.score,
-    secondary: secondary ? secondary.name : null,
-    secondaryScore: secondary ? secondary.score : null,
-    confidence,
-    indicators,
-    riskPattern,
-    coMorbidity,
-  };
+// Definitions-Typen für Suchtrichtungen
+export const ADDICTION_TYPES = {
+  ALCOHOL: 'Alkohol',
+  DRUGS: 'Drogen/Substanzen',
+  GAMBLING: 'Glücksspiel',
+  GAMING: 'Gaming/Internet',
+  SHOPPING: 'Kaufsucht',
+  WORK: 'Arbeitssucht',
+  FOOD: 'Essverhalten',
+  SOCIAL_MEDIA: 'Social Media',
+  PORNOGRAPHY: 'Pornografie',
+  MIXED: 'Mischform',
+} as const;
+
+// Indikatoren pro Suchttyp - welche Fragen-IDs deuten auf welche Sucht hin
+const ADDICTION_INDICATORS = {
+  ALCOHOL: ['f4_9', 'f5_3', 'f5_5', 'f1_3', 'f2_5', 'f4_2'], // Substanz-bezogen, Entzug, soziale Folgen
+  DRUGS: ['f4_9', 'f5_3', 'f1_3', 'f2_4', 'f4_7'], // Substanzen, Verheimlichen, Toleranz
+  GAMBLING: ['f3_8', 'f2_8', 'f1_5', 'f2_2', 'f4_5'], // Glücksspiel, Finanzen, Kontrollverlust
+  GAMING: ['f3_1', 'f3_2', 'f1_7', 'f4_3', 'f5_7'], // Digital, Zeitaufwand, soziale Isolation
+  SHOPPING: ['f2_8', 'f1_5', 'f2_2', 'f3_5'], // Finanzielle Probleme, Kontrollverlust, Impulsivität
+  WORK: ['f1_7', 'f4_1', 'f5_1', 'f2_3'], // Zeitaufwand, Pflichten vernachlässigt, Stress
+  FOOD: ['f1_5', 'f2_4', 'f5_4'], // Kontrollverlust, Verheimlichen, Körperliche Symptome
+  SOCIAL_MEDIA: ['f3_1', 'f3_2', 'f1_7', 'f4_3'], // Digital, Online-Verhalten, Zeitaufwand
+  PORNOGRAPHY: ['f3_3', 'f2_4', 'f1_7', 'f4_8'], // Internet-Content, Verheimlichen, Zeitaufwand
+};
+
+// Gewichtung für kritische Fragen (höhere Scores sind wichtiger)
+const CRITICAL_INDICATORS = {
+  'f1_5': 3, // Kontrollverlust - sehr wichtig
+  'f2_4': 3, // Verheimlichen - sehr wichtig
+  'f4_5': 2.5, // Soziale Folgen
+  'f5_3': 2.5, // Entzugssymptome
+  'f4_9': 3, // Substanzen - direkt
+  'f3_8': 3, // Glücksspiel - direkt
+  'f3_1': 2, // Digital
+  'f2_8': 2, // Finanzielle Probleme
 };
 
 /**
- * Berechnet einen spezifischen Indikator basierend auf relevanten Fragen
+ * Analysiert die Antworten und identifiziert die Suchtrichtung
  */
-const calculateIndicator = (responses: Response[], questionIds: string[]): number => {
-  const relevantResponses = responses.filter(r => questionIds.includes(r.questionId));
-  if (relevantResponses.length === 0) return 0;
-  
-  const totalScore = relevantResponses.reduce((sum, r) => sum + r.value, 0);
-  const maxPossible = relevantResponses.length * 4; // Max value pro Frage ist 4
-  
-  return Math.round((totalScore / maxPossible) * 100);
-};
+export const analyzeAddictionDirection = (responses: Response[]): AddictionDirection => {
+  const scores: { [key: string]: number } = {};
+  const indicators: { [key: string]: string[] } = {};
 
-/**
- * Erkennt spezifische Risiko-Muster basierend auf den Indikatoren
- */
-const detectRiskPattern = (indicators: AddictionDirection['indicators']): string => {
-  const { gambling, substance, digital, alcohol, shopping } = indicators;
-  
-  // Mehrfach-Sucht Muster
-  if (gambling > 60 && (substance > 40 || alcohol > 40)) {
-    return 'Gambling + Substanzmissbrauch (Hohes Risiko)';
-  }
-  
-  if (digital > 70 && substance > 30) {
-    return 'Digitale Sucht + Substanzen (Eskapismus-Muster)';
-  }
-  
-  if (alcohol > 50 && substance > 30) {
-    return 'Polysubstanz-Missbrauch (Kritisch)';
-  }
-  
-  if (shopping > 60 && gambling > 40) {
-    return 'Impulskontroll-Störung (Shopping + Gambling)';
-  }
-  
-  // Einzel-Sucht Muster
-  if (digital > 70) {
-    return 'Digitale Sucht (Gaming/Social Media)';
-  }
-  
-  if (gambling > 70) {
-    return 'Pathologisches Glücksspiel';
-  }
-  
-  if (alcohol > 70) {
-    return 'Alkohol-Abhängigkeit';
-  }
-  
-  if (substance > 70) {
-    return 'Substanz-Abhängigkeit';
-  }
-  
-  if (shopping > 70) {
-    return 'Kaufsucht (Compulsive Buying)';
-  }
-  
-  // Diffuses Muster
-  const highScores = Object.values(indicators).filter(v => v > 40).length;
-  if (highScores >= 3) {
-    return 'Diffuses Suchtmuster (mehrere Bereiche betroffen)';
-  }
-  
-  return 'Einzelner Fokus';
-};
-
-/**
- * Generiert eine detaillierte Analyse für Berater
- */
-export const generateCounselorReport = (direction: AddictionDirection): string => {
-  let report = `🎯 SUCHT-RICHTUNGS-ANALYSE\n\n`;
-  
-  report += `Primäre Richtung: ${direction.primary} (${direction.primaryScore}%)\n`;
-  report += `Konfidenz: ${(direction.confidence * 100).toFixed(0)}%\n\n`;
-  
-  if (direction.secondary) {
-    report += `⚠️ Sekundäre Richtung: ${direction.secondary} (${direction.secondaryScore}%)\n\n`;
-  }
-  
-  report += `📊 KATEGORIE-INDIKATOREN:\n`;
-  Object.entries(direction.indicators).forEach(([key, value]) => {
-    const emoji = value > 70 ? '🔴' : value > 50 ? '🟠' : value > 30 ? '🟡' : '🟢';
-    report += `${emoji} ${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}%\n`;
+  // Initialisiere Scores
+  Object.keys(ADDICTION_TYPES).forEach(key => {
+    scores[key] = 0;
+    indicators[key] = [];
   });
-  
-  report += `\n🔍 RISIKO-MUSTER:\n${direction.riskPattern}\n\n`;
-  
-  if (direction.coMorbidity) {
-    report += `⚠️ KO-MORBIDITÄT ERKANNT!\n`;
-    report += `Mehrere Suchtformen gleichzeitig vorhanden.\n`;
-    report += `Empfehlung: Umfassende multimodale Behandlung.\n`;
+
+  // Analysiere jede Antwort
+  responses.forEach(response => {
+    const question = questions.find(q => q.id === response.questionId);
+    if (!question) return;
+
+    // Prüfe für jeden Suchttyp, ob diese Frage ein Indikator ist
+    Object.entries(ADDICTION_INDICATORS).forEach(([addictionType, questionIds]) => {
+      if (questionIds.includes(response.questionId)) {
+        // Gewichte die Antwort (höhere Werte = stärkere Ausprägung)
+        const weight = CRITICAL_INDICATORS[response.questionId as keyof typeof CRITICAL_INDICATORS] || 1;
+        const answerScore = response.value * weight;
+        
+        scores[addictionType] += answerScore;
+
+        // Füge Indikator hinzu, wenn die Antwort signifikant ist (≥3)
+        if (response.value >= 3) {
+          indicators[addictionType].push(question.text);
+        }
+      }
+    });
+  });
+
+  // Normalisiere Scores (0-100)
+  const maxPossibleScore = Math.max(...Object.values(scores));
+  Object.keys(scores).forEach(key => {
+    scores[key] = maxPossibleScore > 0 ? (scores[key] / maxPossibleScore) * 100 : 0;
+  });
+
+  // Sortiere nach Score
+  const sortedTypes = Object.entries(scores)
+    .filter(([_, score]) => score > 0)
+    .sort(([_, a], [__, b]) => b - a);
+
+  // Bestimme primäre und sekundäre Suchtrichtung
+  const primary = sortedTypes[0];
+  const secondary = sortedTypes[1];
+
+  // Berechne Substanz vs. Verhaltensbasiert
+  const substanceTypes = ['ALCOHOL', 'DRUGS'];
+  const behavioralTypes = ['GAMBLING', 'GAMING', 'SHOPPING', 'WORK', 'SOCIAL_MEDIA', 'PORNOGRAPHY', 'FOOD'];
+
+  const substanceBased = substanceTypes.reduce((sum, type) => sum + (scores[type] || 0), 0) / substanceTypes.length;
+  const behavioralBased = behavioralTypes.reduce((sum, type) => sum + (scores[type] || 0), 0) / behavioralTypes.length;
+
+  // Polysucht-Erkennung: Mehr als 2 Typen mit Score > 40
+  const highScoreTypes = sortedTypes.filter(([_, score]) => score > 40);
+  const polyaddiction = highScoreTypes.length > 2;
+
+  // Bestimme finalen Typ
+  let primaryType = primary ? ADDICTION_TYPES[primary[0] as keyof typeof ADDICTION_TYPES] : ADDICTION_TYPES.MIXED;
+  let secondaryType = secondary && secondary[1] > 30 ? ADDICTION_TYPES[secondary[0] as keyof typeof ADDICTION_TYPES] : undefined;
+
+  // Wenn Polysucht erkannt wird
+  if (polyaddiction) {
+    primaryType = ADDICTION_TYPES.MIXED;
+    secondaryType = primary ? ADDICTION_TYPES[primary[0] as keyof typeof ADDICTION_TYPES] : undefined;
   }
-  
-  return report;
+
+  return {
+    primary: {
+      type: primaryType,
+      confidence: primary ? Math.round(primary[1]) : 0,
+      indicators: primary ? indicators[primary[0]] || [] : [],
+    },
+    secondary: secondary && secondary[1] > 30 ? {
+      type: secondaryType || '',
+      confidence: Math.round(secondary[1]),
+      indicators: indicators[secondary[0]] || [],
+    } : undefined,
+    patterns: {
+      substanceBased: Math.round(substanceBased),
+      behavioralBased: Math.round(behavioralBased),
+      polyaddiction,
+    },
+  };
+};
+
+/**
+ * Gibt eine textuelle Beschreibung der Suchtrichtung zurück
+ */
+export const getAddictionDirectionDescription = (direction: AddictionDirection): string => {
+  const { primary, secondary, patterns } = direction;
+
+  if (patterns.polyaddiction) {
+    return `Mischform verschiedener Suchtproblematiken mit Schwerpunkt auf ${primary.type}${secondary ? ` und ${secondary.type}` : ''}. Es liegen Hinweise auf mehrere Problembereiche vor.`;
+  }
+
+  if (secondary && secondary.confidence > 30) {
+    return `Primär ${primary.type}-bezogen (${primary.confidence}% Übereinstimmung), mit sekundären Hinweisen auf ${secondary.type} (${secondary.confidence}%).`;
+  }
+
+  return `Primär ${primary.type}-bezogen mit ${primary.confidence}% Übereinstimmung der relevanten Indikatoren.`;
+};
+
+/**
+ * Gibt spezifische Empfehlungen basierend auf der Suchtrichtung zurück
+ */
+export const getDirectionSpecificRecommendations = (direction: AddictionDirection): string[] => {
+  const recommendations: string[] = [];
+  const primaryType = Object.keys(ADDICTION_TYPES).find(
+    key => ADDICTION_TYPES[key as keyof typeof ADDICTION_TYPES] === direction.primary.type
+  );
+
+  switch (primaryType) {
+    case 'ALCOHOL':
+      recommendations.push(
+        'Kontaktaufnahme zu Suchtberatungsstellen mit Alkohol-Schwerpunkt',
+        'Erwägung einer ambulanten oder stationären Entzugstherapie',
+        'Teilnahme an Selbsthilfegruppen (z.B. Anonyme Alkoholiker)',
+        'Ärztliche Abklärung körperlicher Folgeschäden'
+      );
+      break;
+    case 'DRUGS':
+      recommendations.push(
+        'Dringender Kontakt zu Drogenberatungsstellen',
+        'Medizinische Begleitung beim Entzug (Cave: Lebensgefahr bei abruptem Entzug)',
+        'Substitutionsprogramme bei Opiatabhängigkeit erwägen',
+        'Psychotherapeutische Begleitung zur Rückfallprophylaxe'
+      );
+      break;
+    case 'GAMBLING':
+      recommendations.push(
+        'Spezialisierte Beratung für pathologisches Glücksspiel',
+        'Finanzielle Beratung und Schuldenregulierung',
+        'Spielersperren in Casinos und Online-Plattformen',
+        'Kognitive Verhaltenstherapie zur Impulskontrolle'
+      );
+      break;
+    case 'GAMING':
+      recommendations.push(
+        'Medienberatung und Digital-Detox Programme',
+        'Verhaltenstherapie mit Fokus auf Internetsucht',
+        'Tagesstruktur und alternative Freizeitaktivitäten aufbauen',
+        'Soziale Reintegration und Offline-Kontakte fördern'
+      );
+      break;
+    case 'SHOPPING':
+      recommendations.push(
+        'Verhaltenstherapie mit Fokus auf Kaufsucht',
+        'Finanzielle Beratung und Budgetplanung',
+        'Erlernen von Impulskontrolltechniken',
+        'Bearbeitung zugrunde liegender emotionaler Themen'
+      );
+      break;
+    case 'WORK':
+      recommendations.push(
+        'Work-Life-Balance Programme',
+        'Stressmanagement und Entspannungstechniken',
+        'Psychotherapie bei Burnout-Risiko',
+        'Berufliche Neuorientierung oder Arbeitszeitreduktion erwägen'
+      );
+      break;
+    case 'FOOD':
+      recommendations.push(
+        'Ernährungsberatung und -therapie',
+        'Psychotherapie bei Essstörungen',
+        'Medizinische Begleitung und körperliche Gesundheitschecks',
+        'Selbsthilfegruppen für Essstörungen'
+      );
+      break;
+    case 'SOCIAL_MEDIA':
+    case 'PORNOGRAPHY':
+      recommendations.push(
+        'Spezialisierte Beratung für Internetsucht',
+        'Verhaltenstherapie und Impulskontrolle',
+        'Digital Detox und Mediennutzungsregeln',
+        'Bearbeitung von Beziehungs- und Intimitätsthemen'
+      );
+      break;
+    case 'MIXED':
+      recommendations.push(
+        'Umfassende Suchtdiagnostik in spezialisierter Einrichtung',
+        'Ganzheitlicher Therapieansatz für multiple Suchtproblematiken',
+        'Intensive therapeutische Begleitung empfohlen',
+        'Prüfung einer stationären Behandlung'
+      );
+      break;
+    default:
+      recommendations.push(
+        'Allgemeine Suchtberatung aufsuchen',
+        'Professionelle Diagnostik zur Klärung',
+        'Psychotherapeutische Unterstützung erwägen'
+      );
+  }
+
+  return recommendations;
 };

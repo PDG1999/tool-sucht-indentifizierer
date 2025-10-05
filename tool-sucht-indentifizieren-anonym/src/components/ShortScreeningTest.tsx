@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ArrowRight, CheckCircle, Zap } from 'lucide-react';
 import { questions } from '../data/questions';
 import { Response, calculatePublicScores, calculateProfessionalScores } from '../utils/scoring';
+import { getShuffledQuestions } from '../utils/questionUtils';
 
 // 10 Kern-Fragen mit höchster Korrelation
-const shortQuestions = [
+const coreQuestions = [
   questions.find(q => q.id === 'f1_5'), // Kontrollverlust
   questions.find(q => q.id === 'f2_4'), // Verheimlichen
   questions.find(q => q.id === 'f3_8'), // Glücksspiel
@@ -25,6 +26,11 @@ const ShortScreeningTest: React.FC<ShortScreeningTestProps> = ({ onUpgrade }) =>
   const [currentStep, setCurrentStep] = useState(0);
   const [responses, setResponses] = useState<Response[]>([]);
   const [showResults, setShowResults] = useState(false);
+
+  // Durchmische auch die Kurz-Version für Unauffälligkeit
+  const shortQuestions = useMemo(() => {
+    return getShuffledQuestions(coreQuestions, 'shuffle'); // Komplett random für kurze Tests
+  }, []);
 
   const currentQuestion = shortQuestions[currentStep];
   const progress = ((currentStep + 1) / shortQuestions.length) * 100;
@@ -51,39 +57,85 @@ const ShortScreeningTest: React.FC<ShortScreeningTestProps> = ({ onUpgrade }) =>
     }
   };
 
-  // Upgrade-Motivation basierend auf Risiko-Level
-  const getUpgradeMessage = (riskLevel: number) => {
+  // Intelligente Upgrade-Motivation basierend auf Risiko-Level UND spezifischen Triggern
+  const getUpgradeMessage = (riskLevel: number, responses: Response[]) => {
+    // Analysiere spezifische Trigger aus den Antworten
+    const triggers = [];
+    
+    // Kontrollverlust (f1_5) - starker Gaming/Sucht-Trigger
+    const controlLoss = responses.find(r => r.questionId === 'f1_5');
+    if (controlLoss && controlLoss.value >= 3) {
+      triggers.push("Kontrollverlust");
+    }
+    
+    // Verheimlichen (f2_4) - Scham-Trigger
+    const hiding = responses.find(r => r.questionId === 'f2_4');
+    if (hiding && hiding.value >= 3) {
+      triggers.push("Verheimlichung");
+    }
+    
+    // Finanzielle Probleme (f2_8) - Angst-Trigger
+    const finance = responses.find(r => r.questionId === 'f2_8');
+    if (finance && finance.value >= 3) {
+      triggers.push("Finanzielle Sorgen");
+    }
+    
+    // Glücksspiel (f3_8) - spezifischer Trigger
+    const gambling = responses.find(r => r.questionId === 'f3_8');
+    if (gambling && gambling.value >= 3) {
+      triggers.push("Glücksspiel");
+    }
+    
+    // Digital/Gaming (f3_1) - Gaming-Trigger
+    const digital = responses.find(r => r.questionId === 'f3_1');
+    if (digital && digital.value >= 3) {
+      triggers.push("Digitale Gewohnheiten");
+    }
+    
+    // Personalisierte Messages basierend auf Triggern
     if (riskLevel >= 70) {
+      const triggerText = triggers.length > 0 
+        ? `Besonders Ihre Angaben zu ${triggers.slice(0, 2).join(' und ')} zeigen, dass eine genauere Betrachtung wichtig ist.`
+        : "Ihre Antworten deuten auf einen erhöhten Unterstützungsbedarf hin.";
+      
       return {
-        title: "Ihre Situation verdient besondere Aufmerksamkeit",
-        message: "Der vollständige Test (40 Fragen) zeigt Ihnen konkrete Schritte für Veränderung und professionelle Unterstützung.",
+        title: "🎯 Wir haben kritische Muster erkannt",
+        message: `${triggerText} Der vollständige Test (nur 5 weitere Minuten) gibt Ihnen klare Antworten und einen konkreten Aktionsplan.`,
         urgency: "Dringend empfohlen",
         color: "red",
-        stats: "92% der Nutzer mit ähnlichen Antworten profitieren vom vollständigen Test"
+        stats: "92% der Nutzer mit ähnlichen Antworten sagen: 'Ich wünschte, ich hätte das früher gemacht'",
+        cta: "Jetzt Klarheit gewinnen"
       };
     } else if (riskLevel >= 50) {
+      const triggerText = triggers.length > 0 
+        ? `Ihre Hinweise auf ${triggers[0]} sind nicht ungewöhnlich, aber sie verdienen Aufmerksamkeit.`
+        : "Ihre aktuelle Situation könnte von einer tieferen Analyse profitieren.";
+      
       return {
-        title: "Wir haben wichtige Hinweise erkannt",
-        message: "Der vollständige Test hilft Ihnen, Ihre Situation besser zu verstehen und den richtigen Weg zu finden.",
+        title: "⚠️ Das ist erst der Anfang",
+        message: `${triggerText} Der vollständige Test deckt versteckte Zusammenhänge auf, die Sie überraschen werden.`,
         urgency: "Stark empfohlen",
         color: "orange",
-        stats: "85% finden im vollständigen Test neue Einsichten"
+        stats: "85% entdecken im vollständigen Test wichtige Einsichten, die der Schnell-Check nicht zeigt",
+        cta: "Vollständige Analyse starten"
       };
     } else if (riskLevel >= 30) {
       return {
-        title: "Ihre Antworten deuten auf mögliche Herausforderungen hin",
-        message: "Der vollständige Test gibt Ihnen tiefere Einblicke und konkrete Hilfestellungen.",
+        title: "🔍 Sie sind auf dem richtigen Weg",
+        message: "Ihre Selbstreflexion ist der erste Schritt. Der vollständige Test gibt Ihnen konkrete Tools und Strategien für Verbesserungen.",
         urgency: "Empfohlen",
         color: "yellow",
-        stats: "73% erhalten personalisierte Empfehlungen im vollständigen Test"
+        stats: "73% nutzen die personalisierten Empfehlungen des vollständigen Tests erfolgreich im Alltag",
+        cta: "Meine Strategie entwickeln"
       };
     } else {
       return {
-        title: "Sie haben die Basis-Einschätzung abgeschlossen",
-        message: "Für ein vollständiges Bild und personalisierte Empfehlungen nutzen Sie den vollständigen Test.",
-        urgency: "Optional",
+        title: "✨ Neugierde lohnt sich",
+        message: "Sie haben eine gute Basis. Entdecken Sie im vollständigen Test, wie Sie Ihre Lebensbalance noch weiter optimieren können.",
+        urgency: "Optional, aber wertvoll",
         color: "green",
-        stats: "Über 10.000 Nutzer haben bereits den vollständigen Test absolviert"
+        stats: "Auch Nutzer mit guten Werten profitieren von den vertieften Einblicken des vollständigen Tests",
+        cta: "Potenzial ausschöpfen"
       };
     }
   };
@@ -92,7 +144,7 @@ const ShortScreeningTest: React.FC<ShortScreeningTestProps> = ({ onUpgrade }) =>
     // Berechne vorläufige Scores
     const publicScores = calculatePublicScores(responses);
     const proScores = calculateProfessionalScores(responses);
-    const upgradeInfo = getUpgradeMessage(proScores.overallRisk);
+    const upgradeInfo = getUpgradeMessage(proScores.overall, responses);
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -113,12 +165,25 @@ const ShortScreeningTest: React.FC<ShortScreeningTestProps> = ({ onUpgrade }) =>
               <h3 className="text-lg font-bold text-gray-900 mb-3">
                 Ihr vorläufiges Ergebnis:
               </h3>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-3">
                 <span className="text-gray-700">Lebensbalance-Score:</span>
                 <span className="text-2xl font-bold text-blue-600">
-                  {publicScores.overallBalance}/100
+                  {publicScores.overall}/100
                 </span>
               </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className={`h-3 rounded-full transition-all duration-500 ${
+                    publicScores.overall >= 70 ? 'bg-green-500' : 
+                    publicScores.overall >= 50 ? 'bg-yellow-500' : 
+                    'bg-red-500'
+                  }`}
+                  style={{ width: `${publicScores.overall}%` }}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-2 text-center">
+                Basierend auf 10 von 40 Fragen
+              </p>
             </div>
 
             {/* Upgrade Motivation */}
@@ -175,11 +240,24 @@ const ShortScreeningTest: React.FC<ShortScreeningTestProps> = ({ onUpgrade }) =>
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
               <button
-                onClick={onUpgrade}
-                className="flex-1 bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
+                onClick={() => {
+                  // Speichere Antworten vom Kurztest in localStorage
+                  localStorage.setItem('prefilledResponses', JSON.stringify(responses));
+                  localStorage.setItem('comeFromShortTest', 'true');
+                  // Navigiere zum vollständigen Test
+                  if (onUpgrade) {
+                    onUpgrade();
+                  }
+                }}
+                className={`flex-1 ${
+                  upgradeInfo.color === 'red' ? 'bg-red-600 hover:bg-red-700 animate-pulse' :
+                  upgradeInfo.color === 'orange' ? 'bg-orange-600 hover:bg-orange-700' :
+                  upgradeInfo.color === 'yellow' ? 'bg-yellow-600 hover:bg-yellow-700' :
+                  'bg-blue-600 hover:bg-blue-700'
+                } text-white py-4 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center shadow-lg`}
               >
                 <Zap className="w-5 h-5 mr-2" />
-                Vollständigen Test starten
+                {upgradeInfo.cta}
               </button>
               <button
                 onClick={() => window.location.reload()}

@@ -79,7 +79,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/test" element={<ScreeningTest />} />
-          <Route path="/test/short" element={<ShortScreeningTest onUpgrade={() => window.location.href = '/test'} />} />
+          <Route path="/schnellcheck" element={<ShortScreeningTest onUpgrade={() => window.location.href = '/test'} />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
           

@@ -16,7 +16,6 @@ const LandingPage: React.FC = () => {
               <span className="ml-3 text-xl font-bold text-gray-900">SAMEBI</span>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <Link to="/dashboard" className="text-samebi-600 hover:text-samebi-700 font-medium">Berater-Dashboard</Link>
               <Link to="/privacy" className="text-gray-500 hover:text-gray-900">Datenschutz</Link>
               <Link to="/terms" className="text-gray-500 hover:text-gray-900">AGB</Link>
             </nav>
@@ -35,15 +34,25 @@ const LandingPage: React.FC = () => {
               Ein professioneller, wissenschaftlich validierter Check Ihres aktuellen Wohlbefindens. 
               Entwickelt für Psychologen und Berater zur Unterstützung ihrer Klienten.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                to="/schnellcheck"
+                className="inline-flex items-center px-8 py-4 bg-green-600 text-white text-lg font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-lg"
+              >
+                ⚡ Schnell-Check (2 Min)
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
               <Link
                 to="/test"
                 className="inline-flex items-center px-8 py-4 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
               >
-                Test jetzt starten
+                Vollständiger Test
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </div>
+            <p className="text-sm text-gray-500 mt-4">
+              💡 Tipp: Starten Sie mit dem Schnell-Check für eine erste Einschätzung
+            </p>
           </div>
         </div>
       </section>

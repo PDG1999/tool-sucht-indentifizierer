@@ -3,10 +3,11 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const { connectDB } = require('./config/database');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 
 // Security middleware
 app.use(helmet());
@@ -68,11 +69,25 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 SAMEBI API Server läuft auf Port ${PORT}`);
-  console.log(`📊 Health Check: http://localhost:${PORT}/health`);
-  console.log(`🔗 CORS Origin: ${process.env.CORS_ORIGIN || 'http://localhost:3004'}`);
-});
+// Start server with DB connection
+const startServer = async () => {
+  try {
+    // Test database connection
+    await connectDB();
+    
+    // Start Express server
+    app.listen(PORT, () => {
+      console.log(`🚀 SAMEBI API Server läuft auf Port ${PORT}`);
+      console.log(`📊 Health Check: http://localhost:${PORT}/health`);
+      console.log(`🔗 CORS Origin: ${process.env.CORS_ORIGIN || 'http://localhost:3004'}`);
+      console.log(`🗄️  Database: Connected successfully`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 module.exports = app;

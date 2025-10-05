@@ -1,31 +1,104 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { ArrowRight, ArrowLeft, CheckCircle, AlertTriangle, Lock, Eye } from 'lucide-react';
 import { questions, sections } from '../data/questions';
 import { Response, calculatePublicScores, calculateProfessionalScores, getRecommendations } from '../utils/scoring';
 import { testResultsAPI } from '../services/api';
 import { getUserSession, TestSessionTracker } from '../utils/tracking';
+import { getShuffledQuestions } from '../utils/questionUtils';
 
 const ScreeningTest: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [responses, setResponses] = useState<Response[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [isProView, setIsProView] = useState(false);
+  const [comeFromShortTest, setComeFromShortTest] = useState(false);
+  const [prefilledCount, setPrefilledCount] = useState(0); // Neue State: Anzahl vorausgefüllter Fragen
   const sessionTrackerRef = useRef<TestSessionTracker | null>(null);
+
+  // Durchmische Fragen einmalig beim Laden - macht es unauffälliger
+  const shuffledQuestions = useMemo(() => {
+    return getShuffledQuestions(questions, 'interleave');
+  }, []);
+
+  // Lade vorausgefüllte Antworten vom Kurztest
+  useEffect(() => {
+    const prefilledResponsesStr = localStorage.getItem('prefilledResponses');
+    const fromShortTest = localStorage.getItem('comeFromShortTest');
+    
+    if (prefilledResponsesStr && fromShortTest === 'true') {
+      try {
+        const prefilledResponses: Response[] = JSON.parse(prefilledResponsesStr);
+        setResponses(prefilledResponses);
+        setComeFromShortTest(true);
+        setPrefilledCount(prefilledResponses.length);
+        
+        // Finde die erste unbeantwortete Frage
+        const answeredQuestionIds = prefilledResponses.map(r => r.questionId);
+        const firstUnansweredIndex = shuffledQuestions.findIndex(
+          q => !answeredQuestionIds.includes(q.id)
+        );
+        
+        // Setze currentStep auf die erste unbeantwortete Frage
+        if (firstUnansweredIndex !== -1) {
+          setCurrentStep(firstUnansweredIndex);
+          console.log('Springe zu Frage', firstUnansweredIndex + 1, '(erste unbeantwortete)');
+        }
+        
+        // Lösche die gespeicherten Daten nach dem Laden
+        localStorage.removeItem('prefilledResponses');
+        localStorage.removeItem('comeFromShortTest');
+        
+        console.log('Antworten vom Kurztest geladen:', prefilledResponses.length);
+      } catch (error) {
+        console.error('Fehler beim Laden der vorausgefüllten Antworten:', error);
+      }
+    }
+  }, [shuffledQuestions]);
 
   // Initialize tracking on component mount
   useEffect(() => {
     const initTracking = async () => {
       const userSession = await getUserSession();
       sessionTrackerRef.current = new TestSessionTracker(userSession);
-      sessionTrackerRef.current.startQuestion(questions[0].id);
+      sessionTrackerRef.current.startQuestion(shuffledQuestions[0].id);
     };
     
     initTracking();
     
     // Track page unload (user leaves without finishing)
-    const handleBeforeUnload = () => {
-      if (sessionTrackerRef.current && !showResults) {
-        sessionTrackerRef.current.abort(questions[currentStep].id);
+    const handleBeforeUnload = async () => {
+      if (sessionTrackerRef.current && !showResults && responses.length > 0) {
+        sessionTrackerRef.current.abort(shuffledQuestions[currentStep].id);
+        
+        // Speichere abgebrochenen Test sofort!
+        const publicScores = calculatePublicScores(responses);
+        const proScores = calculateProfessionalScores(responses);
+        const sessionData = sessionTrackerRef.current?.getSession();
+        
+        try {
+          // Verwende navigator.sendBeacon für zuverlässige Übertragung beim Verlassen
+          const data = JSON.stringify({
+            responses: responses.map(r => ({ questionId: r.questionId, answer: r.value })),
+            publicScores,
+            professionalScores: proScores,
+            riskLevel: proScores.overall >= 70 ? 'kritisch' : proScores.overall >= 50 ? 'hoch' : proScores.overall >= 30 ? 'mittel' : 'niedrig',
+            primaryConcern: proScores.addictionDirection?.primary.type || 'Unbekannt',
+            aborted: true, // ← Markiere als abgebrochen!
+            abortedAtQuestion: currentStep + 1,
+            completedQuestions: responses.length,
+            sessionData: sessionData ? {
+              userSession: sessionData.userSession,
+              testSession: sessionData.testSession,
+              questionMetrics: sessionData.questionMetrics,
+            } : undefined,
+          });
+          
+          const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+          navigator.sendBeacon(`${API_URL}/test-results/submit`, new Blob([data], { type: 'application/json' }));
+          console.log('Abgebrochener Test gespeichert:', responses.length, 'Fragen');
+        } catch (error) {
+          console.error('Fehler beim Speichern des abgebrochenen Tests:', error);
+        }
       }
     };
     
@@ -34,17 +107,18 @@ const ScreeningTest: React.FC = () => {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, []);
+  }, [responses, currentStep, showResults, shuffledQuestions]);
 
   // Track question changes
   useEffect(() => {
     if (sessionTrackerRef.current && !showResults) {
-      sessionTrackerRef.current.startQuestion(questions[currentStep].id);
+      sessionTrackerRef.current.startQuestion(shuffledQuestions[currentStep].id);
     }
-  }, [currentStep, showResults]);
+  }, [currentStep, showResults, shuffledQuestions]);
 
-  const currentQuestion = questions[currentStep];
-  const progress = ((currentStep + 1) / questions.length) * 100;
+  const currentQuestion = shuffledQuestions[currentStep];
+  // Progress basiert auf tatsächlich beantworteten Fragen, nicht auf chronologischer Position
+  const progress = (responses.length / shuffledQuestions.length) * 100;
 
   const handleAnswer = (value: number) => {
     const newResponses = responses.filter(r => r.questionId !== currentQuestion.id);
@@ -60,7 +134,7 @@ const ScreeningTest: React.FC = () => {
   const currentAnswer = responses.find(r => r.questionId === currentQuestion.id)?.value;
 
   const handleNext = async () => {
-    if (currentStep < questions.length - 1) {
+    if (currentStep < shuffledQuestions.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       // Mark test as complete
@@ -292,6 +366,109 @@ const ScreeningTest: React.FC = () => {
                 </div>
               </div>
 
+              {/* Neue Suchtrichtung-Analyse */}
+              {proScores.addictionDirection && (
+                <div className="mb-6 p-6 bg-purple-50 rounded-lg border-l-4 border-purple-600">
+                  <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    🎯 Detaillierte Suchtrichtung-Analyse
+                  </h2>
+                  
+                  <div className="space-y-4">
+                    {/* Primäre Suchtrichtung */}
+                    <div className="bg-white p-4 rounded-lg shadow">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-semibold text-gray-800">Primäre Richtung</span>
+                        <span className="px-3 py-1 bg-purple-600 text-white rounded-full text-sm font-bold">
+                          {proScores.addictionDirection.primary.confidence}% Übereinstimmung
+                        </span>
+                      </div>
+                      <p className="text-2xl font-bold text-purple-700 mb-2">
+                        {proScores.addictionDirection.primary.type}
+                      </p>
+                      {proScores.addictionDirection.primary.indicators.length > 0 && (
+                        <div className="mt-3">
+                          <p className="text-sm font-medium text-gray-600 mb-1">Schlüssel-Indikatoren:</p>
+                          <ul className="text-xs text-gray-600 space-y-1">
+                            {proScores.addictionDirection.primary.indicators.slice(0, 3).map((indicator, i) => (
+                              <li key={i} className="flex items-start gap-1">
+                                <span className="text-purple-600">•</span>
+                                <span>{indicator}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Sekundäre Suchtrichtung (falls vorhanden) */}
+                    {proScores.addictionDirection.secondary && (
+                      <div className="bg-white p-4 rounded-lg shadow">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-semibold text-gray-800">Sekundäre Richtung</span>
+                          <span className="px-3 py-1 bg-gray-500 text-white rounded-full text-sm font-bold">
+                            {proScores.addictionDirection.secondary.confidence}%
+                          </span>
+                        </div>
+                        <p className="text-xl font-bold text-gray-700">
+                          {proScores.addictionDirection.secondary.type}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Muster-Analyse */}
+                    <div className="bg-white p-4 rounded-lg shadow">
+                      <p className="font-semibold text-gray-800 mb-3">Suchtmuster-Analyse</p>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <p className="text-xs text-gray-600">Stoffgebunden</p>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-blue-600 h-2 rounded-full"
+                                style={{ width: `${proScores.addictionDirection.patterns.substanceBased}%` }}
+                              />
+                            </div>
+                            <span className="text-xs font-bold text-gray-700">
+                              {proScores.addictionDirection.patterns.substanceBased}%
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600">Verhaltensbasiert</p>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-green-600 h-2 rounded-full"
+                                style={{ width: `${proScores.addictionDirection.patterns.behavioralBased}%` }}
+                              />
+                            </div>
+                            <span className="text-xs font-bold text-gray-700">
+                              {proScores.addictionDirection.patterns.behavioralBased}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      {proScores.addictionDirection.patterns.polyaddiction && (
+                        <div className="mt-3 p-2 bg-red-100 rounded border border-red-300">
+                          <p className="text-xs text-red-800 font-semibold">
+                            ⚠️ Polysucht erkannt: Mehrere Suchtproblematiken gleichzeitig vorhanden
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Beschreibung */}
+                    {proScores.directionDescription && (
+                      <div className="bg-white p-4 rounded-lg shadow">
+                        <p className="text-sm text-gray-700 leading-relaxed">
+                          {proScores.directionDescription}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-4 mb-6">
                 <h2 className="text-xl font-bold text-gray-800 mb-4">Kategorie-Breakdown</h2>
                 
@@ -333,20 +510,40 @@ const ScreeningTest: React.FC = () => {
               </div>
 
               {proScores.overall > 40 && (
-                <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg">
-                  <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                    <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                    Empfohlene nächste Schritte
-                  </h3>
-                  <ul className="space-y-2 text-sm text-gray-700">
-                    {recommendations.map((rec, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <span className="text-yellow-600 mt-1">✓</span>
-                        <span>{rec}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <>
+                  {/* Spezifische Empfehlungen basierend auf Suchtrichtung */}
+                  {proScores.directionRecommendations && proScores.directionRecommendations.length > 0 && (
+                    <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mb-4">
+                      <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                        🎯 Spezifische Empfehlungen für {proScores.addictionDirection?.primary.type}
+                      </h3>
+                      <ul className="space-y-2 text-sm text-gray-700">
+                        {proScores.directionRecommendations.map((rec, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-blue-600 mt-1">→</span>
+                            <span>{rec}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {/* Allgemeine Empfehlungen */}
+                  <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg">
+                    <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                      <AlertTriangle className="w-5 h-5 text-yellow-600" />
+                      Allgemeine nächste Schritte
+                    </h3>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      {recommendations.map((rec, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <span className="text-yellow-600 mt-1">✓</span>
+                          <span>{rec}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
               )}
 
               <div className="mt-6 p-4 bg-gray-100 rounded-lg text-xs text-gray-600">
@@ -376,10 +573,33 @@ const ScreeningTest: React.FC = () => {
           <p className="text-gray-600">Ein kurzer Check Ihres aktuellen Wohlbefindens</p>
         </div>
 
+        {/* Banner: Antworten vom Kurztest übernommen - nur die ersten 3 Schritte */}
+        {comeFromShortTest && currentStep < 3 && prefilledCount > 0 && (
+          <div className="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg animate-fade-in">
+            <div className="flex items-start">
+              <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
+              <div>
+                <p className="font-semibold text-green-800">
+                  Großartig! Sie machen weiter 🎉
+                </p>
+                <p className="text-sm text-green-700 mt-1">
+                  Ihre {prefilledCount} Antworten vom Schnell-Check wurden übernommen. 
+                  Nur noch {shuffledQuestions.length - prefilledCount} Fragen bis zum vollständigen Ergebnis!
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Progress Bar */}
         <div className="mb-6">
           <div className="flex justify-between text-sm text-gray-600 mb-2">
-            <span>Frage {currentStep + 1} von {questions.length}</span>
+            <span>
+              {comeFromShortTest 
+                ? `Frage ${responses.length + 1} von ${shuffledQuestions.length}`
+                : `Frage ${currentStep + 1} von ${shuffledQuestions.length}`
+              }
+            </span>
             <span>{Math.round(progress)}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
@@ -387,6 +607,17 @@ const ScreeningTest: React.FC = () => {
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
+          </div>
+          {/* Zeige Fortschritt */}
+          <div className="flex justify-between items-center mt-2">
+            {responses.length > 0 && (
+              <p className="text-xs text-gray-500">
+                ✓ {responses.length} beantwortet
+              </p>
+            )}
+            <p className="text-xs text-gray-500 ml-auto">
+              Noch {shuffledQuestions.length - responses.length} offen
+            </p>
           </div>
         </div>
 
