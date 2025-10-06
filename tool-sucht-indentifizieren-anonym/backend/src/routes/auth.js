@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
-const pool = require('../config/database');
+const { pool } = require('../config/database');
 const rateLimit = require('express-rate-limit');
 
 const router = express.Router();
