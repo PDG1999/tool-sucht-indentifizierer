@@ -98,6 +98,7 @@ router.post('/login', authLimiter, async (req, res) => {
           id: counselor.id,
           name: counselor.name,
           email: counselor.email,
+          role: counselor.role,
           licenseNumber: counselor.license_number,
           specialization: counselor.specialization
         }
