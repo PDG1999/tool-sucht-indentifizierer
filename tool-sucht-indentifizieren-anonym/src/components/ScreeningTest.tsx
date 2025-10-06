@@ -104,6 +104,21 @@ const ScreeningTest: React.FC = () => {
       if (sessionTrackerRef.current && !showResults && responses.length > 0) {
         sessionTrackerRef.current.abort(shuffledQuestions[currentStep].id);
         
+        // WICHTIG: Speichere Progress sofort (synchron)!
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        try {
+          const progressData = JSON.stringify({
+            sessionId,
+            responses,
+            currentQuestion: currentStep,
+            testType: 'full'
+          });
+          navigator.sendBeacon(`${API_URL}/test-results/save-progress`, new Blob([progressData], { type: 'application/json' }));
+          console.log('✅ Progress beim Verlassen gespeichert');
+        } catch (error) {
+          console.warn('⚠️ Progress save on exit failed:', error);
+        }
+        
         // Speichere abgebrochenen Test sofort!
         const publicScores = calculatePublicScores(responses);
         const proScores = calculateProfessionalScores(responses);
