@@ -169,12 +169,27 @@ router.post('/submit', async (req, res) => {
       publicScores, 
       professionalScores,
       riskLevel,
-      primaryConcern
+      primaryConcern,
+      aborted,
+      abortedAtQuestion,
+      completedQuestions,
+      sessionData,
+      trackingData
     } = req.body;
     
     if (!responses || !publicScores || !professionalScores) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
+    
+    console.log('📊 Test submission received:', {
+      responses: responses.length,
+      aborted: aborted || false,
+      abortedAtQuestion,
+      completedQuestions,
+      hasTracking: !!trackingData,
+      city: trackingData?.geoData?.city,
+      device: trackingData?.deviceData?.deviceType
+    });
     
     // Get system account ID for anonymous tests
     const { pool } = require('../config/database');
@@ -199,15 +214,45 @@ router.post('/submit', async (req, res) => {
       });
     }
     
+    // Prepare tracking data for database
+    const trackingDataForDB = trackingData ? {
+      browser_fingerprint: trackingData.browserFingerprint,
+      ip_address: trackingData.geoData?.ip,
+      user_agent: trackingData.deviceData?.userAgent,
+      geo_data: trackingData.geoData ? {
+        city: trackingData.geoData.city,
+        region: trackingData.geoData.region,
+        country: trackingData.geoData.country,
+        countryCode: trackingData.geoData.countryCode,
+        latitude: trackingData.geoData.latitude,
+        longitude: trackingData.geoData.longitude,
+        timezone: trackingData.geoData.timezone,
+        isp: trackingData.geoData.isp
+      } : null,
+      device_type: trackingData.deviceData?.deviceType,
+      browser: trackingData.deviceData?.browser,
+      browser_version: trackingData.deviceData?.browserVersion,
+      os: trackingData.deviceData?.os,
+      os_version: trackingData.deviceData?.osVersion,
+      screen_resolution: trackingData.deviceData?.screenResolution,
+      language: trackingData.deviceData?.language,
+      referrer: trackingData.referrer
+    } : null;
+
     const testResult = await TestResult.create({
       clientId: client ? client.id : null,
-      counselorId: systemCounselorId, // Assign to system account for anonymous tests
+      counselorId: systemCounselorId,
       responses: responses,
       publicScores: publicScores,
       professionalScores: professionalScores,
       riskLevel: riskLevel,
       primaryConcern: primaryConcern,
-      followUpRequired: riskLevel === 'hoch' || riskLevel === 'kritisch'
+      followUpRequired: riskLevel === 'high' || riskLevel === 'critical',
+      aborted: aborted || false,
+      abortedAtQuestion: abortedAtQuestion || null,
+      completedQuestions: completedQuestions || responses.length,
+      sessionData: sessionData || null,
+      trackingData: trackingDataForDB
     });
     
     res.status(201).json({

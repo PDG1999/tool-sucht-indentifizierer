@@ -12,15 +12,21 @@ class TestResult {
       followUpRequired,
       followUpDate,
       riskLevel,
-      primaryConcern
+      primaryConcern,
+      aborted,
+      abortedAtQuestion,
+      completedQuestions,
+      sessionData,
+      trackingData
     } = testData;
 
     const query = `
       INSERT INTO test_results (
         client_id, counselor_id, responses, public_scores, professional_scores,
-        session_notes, follow_up_required, follow_up_date, risk_level, primary_concern
+        session_notes, follow_up_required, follow_up_date, risk_level, primary_concern,
+        aborted, aborted_at_question, completed_questions, session_data, tracking_data
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
       RETURNING *
     `;
 
@@ -34,7 +40,12 @@ class TestResult {
       followUpRequired, 
       followUpDate,
       riskLevel, 
-      primaryConcern
+      primaryConcern,
+      aborted || false,
+      abortedAtQuestion || null,
+      completedQuestions || (Array.isArray(responses) ? responses.length : 0),
+      sessionData ? (typeof sessionData === 'string' ? sessionData : JSON.stringify(sessionData)) : null,
+      trackingData ? (typeof trackingData === 'string' ? trackingData : JSON.stringify(trackingData)) : null
     ];
 
     const result = await pool.query(query, values);
