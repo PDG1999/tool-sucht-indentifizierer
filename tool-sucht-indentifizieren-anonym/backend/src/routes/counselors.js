@@ -20,7 +20,6 @@ router.get('/', authenticateToken, async (req, res) => {
         is_active,
         license_number,
         specialization,
-        practice_name,
         created_at
       FROM counselors
       ORDER BY name ASC
@@ -65,3 +64,6 @@ router.get('/stats', authenticateToken, async (req, res) => {
 });
 
 module.exports = router;
+
+
+

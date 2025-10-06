@@ -82,6 +82,11 @@ class Client {
     const result = await pool.query(query, [counselorId]);
     return result.rows[0];
   }
+
+  // Alias for backward compatibility
+  static async getAllByCounselor(counselorId, options = {}) {
+    return this.findByCounselorId(counselorId, options);
+  }
 }
 
 module.exports = Client;
