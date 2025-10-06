@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const pool = require('../config/database');
+const { pool } = require('../config/database');
 
 const authenticateToken = async (req, res, next) => {
   try {
@@ -18,7 +18,7 @@ const authenticateToken = async (req, res, next) => {
     
     // Check if session is still active in database
     const sessionQuery = `
-      SELECT s.*, c.name, c.email, c.license_number, c.specialization, c.is_active
+      SELECT s.*, c.name, c.email, c.role, c.license_number, c.specialization, c.is_active
       FROM sessions s
       JOIN counselors c ON s.counselor_id = c.id
       WHERE s.token = $1 AND s.is_active = true AND s.expires_at > NOW()
@@ -44,13 +44,15 @@ const authenticateToken = async (req, res, next) => {
     }
 
     // Add counselor info to request
-    req.counselor = {
+    req.user = {
       id: session.counselor_id,
       name: session.name,
       email: session.email,
+      role: session.role,
       licenseNumber: session.license_number,
       specialization: session.specialization
     };
+    req.counselor = req.user; // Backward compatibility
 
     next();
 
