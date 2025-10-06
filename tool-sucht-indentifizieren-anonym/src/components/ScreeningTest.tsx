@@ -5,6 +5,7 @@ import { Response, calculatePublicScores, calculateProfessionalScores, getRecomm
 import { testResultsAPI } from '../services/api';
 import { getUserSession, TestSessionTracker } from '../utils/tracking';
 import { getShuffledQuestions } from '../utils/questionUtils';
+import { getTrackingData, TrackingData } from '../utils/geoTracking';
 
 const ScreeningTest: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -16,6 +17,7 @@ const ScreeningTest: React.FC = () => {
   const sessionTrackerRef = useRef<TestSessionTracker | null>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+  const [trackingData, setTrackingData] = useState<TrackingData | null>(null);
 
   // Durchmische Fragen einmalig beim Laden - macht es unauffälliger
   const shuffledQuestions = useMemo(() => {
@@ -95,6 +97,11 @@ const ScreeningTest: React.FC = () => {
       const userSession = await getUserSession();
       sessionTrackerRef.current = new TestSessionTracker(userSession);
       sessionTrackerRef.current.startQuestion(shuffledQuestions[0].id);
+      
+      // Fetch geo & device data immediately
+      const tracking = await getTrackingData();
+      setTrackingData(tracking);
+      console.log('📍 Tracking-Daten erfasst:', tracking);
     };
     
     initTracking();
@@ -147,6 +154,12 @@ const ScreeningTest: React.FC = () => {
               userSession: sessionData.userSession,
               testSession: sessionData.testSession,
               questionMetrics: sessionData.questionMetrics,
+            } : undefined,
+            trackingData: trackingData ? {
+              geoData: trackingData.geoData,
+              deviceData: trackingData.deviceData,
+              browserFingerprint: trackingData.browserFingerprint,
+              referrer: trackingData.referrer
             } : undefined,
           });
           
@@ -238,6 +251,12 @@ const ScreeningTest: React.FC = () => {
               abortedAt: sessionData.abortedAt,
             },
             questionMetrics: sessionData.questionMetrics,
+          } : undefined,
+          trackingData: trackingData ? {
+            geoData: trackingData.geoData,
+            deviceData: trackingData.deviceData,
+            browserFingerprint: trackingData.browserFingerprint,
+            referrer: trackingData.referrer
           } : undefined,
         });
         console.log('Test-Ergebnisse erfolgreich gespeichert mit Tracking-Daten');
