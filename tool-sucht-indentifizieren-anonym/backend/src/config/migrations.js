@@ -54,6 +54,24 @@ async function runMigrations() {
       console.log('✅ test_progress table already exists.');
     }
     
+    // Check if tracking columns exist in test_results
+    const trackingColumnsCheck = await client.query(`
+      SELECT column_name 
+      FROM information_schema.columns 
+      WHERE table_name = 'test_results' AND column_name = 'tracking_data';
+    `);
+    const trackingColumnsExist = trackingColumnsCheck.rows.length > 0;
+
+    if (!trackingColumnsExist) {
+      console.log('📦 Adding tracking columns to test_results...');
+      const trackingMigrationPath = path.join(__dirname, '../migrations/004_add_tracking_columns.sql');
+      const trackingMigrationSQL = await fs.readFile(trackingMigrationPath, 'utf-8');
+      await client.query(trackingMigrationSQL);
+      console.log('✅ Tracking columns added successfully!');
+    } else {
+      console.log('✅ Tracking columns already exist.');
+    }
+    
     // Check if demo accounts exist
     const accountCheck = await client.query(`
       SELECT COUNT(*) as count FROM counselors WHERE email IN ('berater@samebi.net', 'supervisor@samebi.net', 'system@samebi.net');
