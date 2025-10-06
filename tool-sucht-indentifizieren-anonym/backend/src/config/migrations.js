@@ -35,6 +35,25 @@ async function runMigrations() {
       console.log('✅ Database schema already exists.');
     }
     
+    // Run additional migrations (test_progress table)
+    const progressTableCheck = await client.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_name = 'test_progress'
+      );
+    `);
+    const progressTableExists = progressTableCheck.rows[0].exists;
+
+    if (!progressTableExists) {
+      console.log('📦 Creating test_progress table...');
+      const progressMigrationPath = path.join(__dirname, '../migrations/003_create_test_progress.sql');
+      const progressMigrationSQL = await fs.readFile(progressMigrationPath, 'utf-8');
+      await client.query(progressMigrationSQL);
+      console.log('✅ test_progress table created successfully!');
+    } else {
+      console.log('✅ test_progress table already exists.');
+    }
+    
     // Check if demo accounts exist
     const accountCheck = await client.query(`
       SELECT COUNT(*) as count FROM counselors WHERE email IN ('berater@samebi.net', 'supervisor@samebi.net', 'system@samebi.net');

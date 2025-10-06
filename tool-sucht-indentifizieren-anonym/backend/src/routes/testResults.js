@@ -77,6 +77,88 @@ router.get('/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// Save intermediate test progress (public endpoint - no auth required)
+router.post('/save-progress', async (req, res) => {
+  try {
+    const { 
+      sessionId,
+      responses, 
+      currentQuestion,
+      testType
+    } = req.body;
+    
+    if (!sessionId || !responses) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    
+    // Store in database with session_id for retrieval
+    const { pool } = require('../config/database');
+    
+    // Check if progress already exists
+    const existingProgress = await pool.query(
+      'SELECT id FROM test_progress WHERE session_id = $1',
+      [sessionId]
+    );
+    
+    if (existingProgress.rows.length > 0) {
+      // Update existing progress
+      await pool.query(
+        `UPDATE test_progress 
+         SET responses = $1, current_question = $2, test_type = $3, updated_at = NOW()
+         WHERE session_id = $4`,
+        [JSON.stringify(responses), currentQuestion, testType, sessionId]
+      );
+    } else {
+      // Insert new progress
+      await pool.query(
+        `INSERT INTO test_progress (session_id, responses, current_question, test_type, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, NOW(), NOW())`,
+        [sessionId, JSON.stringify(responses), currentQuestion, testType]
+      );
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: 'Progress saved',
+      sessionId: sessionId
+    });
+  } catch (error) {
+    console.error('Error saving progress:', error);
+    // Don't fail the test if saving fails - just log it
+    res.status(200).json({
+      success: false,
+      message: 'Progress save failed, but test can continue'
+    });
+  }
+});
+
+// Get saved progress (public endpoint - no auth required)
+router.get('/progress/:sessionId', async (req, res) => {
+  try {
+    const { pool } = require('../config/database');
+    const result = await pool.query(
+      'SELECT * FROM test_progress WHERE session_id = $1',
+      [req.params.sessionId]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No saved progress found' });
+    }
+    
+    const progress = result.rows[0];
+    res.json({
+      sessionId: progress.session_id,
+      responses: progress.responses,
+      currentQuestion: progress.current_question,
+      testType: progress.test_type,
+      savedAt: progress.updated_at
+    });
+  } catch (error) {
+    console.error('Error fetching progress:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // Create a new test result (public endpoint - no auth required)
 router.post('/submit', async (req, res) => {
   try {
