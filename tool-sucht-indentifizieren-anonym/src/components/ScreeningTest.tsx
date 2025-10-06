@@ -14,11 +14,45 @@ const ScreeningTest: React.FC = () => {
   const [comeFromShortTest, setComeFromShortTest] = useState(false);
   const [prefilledCount, setPrefilledCount] = useState(0); // Neue State: Anzahl vorausgefüllter Fragen
   const sessionTrackerRef = useRef<TestSessionTracker | null>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
 
   // Durchmische Fragen einmalig beim Laden - macht es unauffälliger
   const shuffledQuestions = useMemo(() => {
     return getShuffledQuestions(questions, 'interleave');
   }, []);
+
+  // Auto-save progress with debouncing (500ms delay)
+  const saveProgress = async (currentResponses: Response[], currentQuestion: number) => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/test-results/save-progress`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          responses: currentResponses,
+          currentQuestion,
+          testType: 'full'
+        })
+      });
+      console.log('✅ Progress auto-saved');
+    } catch (error) {
+      console.warn('⚠️ Progress save failed (non-critical):', error);
+    }
+  };
+
+  // Debounced save function
+  const debouncedSave = (currentResponses: Response[], currentQuestion: number) => {
+    // Clear previous timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    // Set new timeout - only saves if user pauses for 500ms
+    saveTimeoutRef.current = setTimeout(() => {
+      saveProgress(currentResponses, currentQuestion);
+    }, 500);
+  };
 
   // Lade vorausgefüllte Antworten vom Kurztest
   useEffect(() => {
@@ -142,6 +176,11 @@ const ScreeningTest: React.FC = () => {
   const currentAnswer = responses.find(r => r.questionId === currentQuestion.id)?.value;
 
   const handleNext = async () => {
+    // Auto-save progress before moving to next question
+    if (responses.length > 0) {
+      debouncedSave(responses, currentStep);
+    }
+    
     if (currentStep < shuffledQuestions.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
