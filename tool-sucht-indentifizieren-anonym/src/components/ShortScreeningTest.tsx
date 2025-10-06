@@ -3,6 +3,7 @@ import { ArrowRight, CheckCircle, Zap } from 'lucide-react';
 import { questions } from '../data/questions';
 import { Response, calculatePublicScores, calculateProfessionalScores } from '../utils/scoring';
 import { getShuffledQuestions } from '../utils/questionUtils';
+import { testResultsAPI } from '../services/api';
 
 // 10 Kern-Fragen mit höchster Korrelation
 const coreQuestions = [
@@ -26,6 +27,8 @@ const ShortScreeningTest: React.FC<ShortScreeningTestProps> = ({ onUpgrade }) =>
   const [currentStep, setCurrentStep] = useState(0);
   const [responses, setResponses] = useState<Response[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   // Durchmische auch die Kurz-Version für Unauffälligkeit
   const shortQuestions = useMemo(() => {
@@ -54,6 +57,42 @@ const ShortScreeningTest: React.FC<ShortScreeningTestProps> = ({ onUpgrade }) =>
   const handleBack = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+    }
+  };
+
+  // Funktion zum Speichern der Kurztest-Ergebnisse
+  const handleSaveAndExit = async () => {
+    setIsSaving(true);
+    try {
+      const publicScores = calculatePublicScores(responses);
+      const proScores = calculateProfessionalScores(responses);
+      
+      await testResultsAPI.submit({
+        responses: responses.map(r => ({ questionId: r.questionId, answer: r.value })),
+        publicScores,
+        professionalScores: proScores,
+        riskLevel: proScores.overall >= 70 ? 'kritisch' : proScores.overall >= 50 ? 'hoch' : proScores.overall >= 30 ? 'mittel' : 'niedrig',
+        primaryConcern: proScores.categories?.sort((a, b) => b.score - a.score)[0]?.name || 'Kurztest',
+        sessionData: {
+          testType: 'short',
+          completedQuestions: responses.length,
+          totalQuestions: 10,
+        },
+      });
+      
+      setSaveSuccess(true);
+      console.log('✅ Kurztest-Ergebnisse erfolgreich gespeichert');
+      
+      // Nach 2 Sekunden Seite neu laden
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (error) {
+      console.error('❌ Fehler beim Speichern der Kurztest-Ergebnisse:', error);
+      // Auch bei Fehler neu laden (User Experience)
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     }
   };
 
@@ -260,10 +299,11 @@ const ShortScreeningTest: React.FC<ShortScreeningTestProps> = ({ onUpgrade }) =>
                 {upgradeInfo.cta}
               </button>
               <button
-                onClick={() => window.location.reload()}
-                className="flex-1 bg-gray-200 text-gray-700 py-4 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                onClick={handleSaveAndExit}
+                disabled={isSaving || saveSuccess}
+                className="flex-1 bg-gray-200 text-gray-700 py-4 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Ergebnis speichern & beenden
+                {isSaving ? '💾 Speichere...' : saveSuccess ? '✅ Gespeichert!' : 'Ergebnis speichern & beenden'}
               </button>
             </div>
 
