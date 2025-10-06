@@ -76,12 +76,20 @@ const ScreeningTest: React.FC = () => {
         const sessionData = sessionTrackerRef.current?.getSession();
         
         try {
+          // Map German risk levels to English for API
+          const getRiskLevelEN = (score: number): string => {
+            if (score >= 70) return 'critical';
+            if (score >= 50) return 'high';
+            if (score >= 30) return 'moderate';
+            return 'low';
+          };
+          
           // Verwende navigator.sendBeacon für zuverlässige Übertragung beim Verlassen
           const data = JSON.stringify({
             responses: responses.map(r => ({ questionId: r.questionId, answer: r.value })),
             publicScores,
             professionalScores: proScores,
-            riskLevel: proScores.overall >= 70 ? 'kritisch' : proScores.overall >= 50 ? 'hoch' : proScores.overall >= 30 ? 'mittel' : 'niedrig',
+            riskLevel: getRiskLevelEN(proScores.overall),
             primaryConcern: proScores.addictionDirection?.primary.type || 'Unbekannt',
             aborted: true, // ← Markiere als abgebrochen!
             abortedAtQuestion: currentStep + 1,
@@ -151,11 +159,19 @@ const ScreeningTest: React.FC = () => {
       
       // Save to database
       try {
+        // Map German risk levels to English for API
+        const getRiskLevelEN = (score: number): string => {
+          if (score >= 70) return 'critical';
+          if (score >= 50) return 'high';
+          if (score >= 30) return 'moderate';
+          return 'low';
+        };
+        
         await testResultsAPI.submit({
           responses: responses.map(r => ({ questionId: r.questionId, answer: r.value })),
           publicScores,
           professionalScores: proScores,
-          riskLevel: proScores.overallRisk >= 70 ? 'kritisch' : proScores.overallRisk >= 50 ? 'hoch' : proScores.overallRisk >= 30 ? 'mittel' : 'niedrig',
+          riskLevel: getRiskLevelEN(proScores.overallRisk),
           primaryConcern: proScores.categories.sort((a, b) => b.score - a.score)[0]?.name || 'Unbekannt',
           // Include tracking data
           sessionData: sessionData ? {

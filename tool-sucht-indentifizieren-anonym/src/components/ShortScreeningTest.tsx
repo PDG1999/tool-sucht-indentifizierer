@@ -67,11 +67,19 @@ const ShortScreeningTest: React.FC<ShortScreeningTestProps> = ({ onUpgrade }) =>
       const publicScores = calculatePublicScores(responses);
       const proScores = calculateProfessionalScores(responses);
       
+      // Map German risk levels to English for API
+      const getRiskLevelEN = (score: number): string => {
+        if (score >= 70) return 'critical';
+        if (score >= 50) return 'high';
+        if (score >= 30) return 'moderate';
+        return 'low';
+      };
+      
       await testResultsAPI.submit({
         responses: responses.map(r => ({ questionId: r.questionId, answer: r.value })),
         publicScores,
         professionalScores: proScores,
-        riskLevel: proScores.overall >= 70 ? 'kritisch' : proScores.overall >= 50 ? 'hoch' : proScores.overall >= 30 ? 'mittel' : 'niedrig',
+        riskLevel: getRiskLevelEN(proScores.overall),
         primaryConcern: proScores.categories?.sort((a, b) => b.score - a.score)[0]?.name || 'Kurztest',
         sessionData: {
           testType: 'short',
