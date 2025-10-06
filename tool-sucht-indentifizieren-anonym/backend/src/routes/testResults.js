@@ -118,14 +118,14 @@ router.post('/submit', async (req, res) => {
     }
     
     const testResult = await TestResult.create({
-      client_id: client ? client.id : null,
-      counselor_id: systemCounselorId, // Assign to system account for anonymous tests
-      responses: JSON.stringify(responses),
-      public_scores: JSON.stringify(publicScores),
-      professional_scores: JSON.stringify(professionalScores),
-      risk_level: riskLevel,
-      primary_concern: primaryConcern,
-      follow_up_required: riskLevel === 'hoch' || riskLevel === 'kritisch'
+      clientId: client ? client.id : null,
+      counselorId: systemCounselorId, // Assign to system account for anonymous tests
+      responses: responses,
+      publicScores: publicScores,
+      professionalScores: professionalScores,
+      riskLevel: riskLevel,
+      primaryConcern: primaryConcern,
+      followUpRequired: riskLevel === 'hoch' || riskLevel === 'kritisch'
     });
     
     res.status(201).json({

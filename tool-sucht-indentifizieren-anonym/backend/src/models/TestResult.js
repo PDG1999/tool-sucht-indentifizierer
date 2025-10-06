@@ -25,9 +25,16 @@ class TestResult {
     `;
 
     const values = [
-      clientId, counselorId, JSON.stringify(responses), JSON.stringify(publicScores),
-      JSON.stringify(professionalScores), sessionNotes, followUpRequired, followUpDate,
-      riskLevel, primaryConcern
+      clientId, 
+      counselorId, 
+      typeof responses === 'string' ? responses : JSON.stringify(responses), 
+      typeof publicScores === 'string' ? publicScores : JSON.stringify(publicScores),
+      typeof professionalScores === 'string' ? professionalScores : JSON.stringify(professionalScores), 
+      sessionNotes, 
+      followUpRequired, 
+      followUpDate,
+      riskLevel, 
+      primaryConcern
     ];
 
     const result = await pool.query(query, values);
