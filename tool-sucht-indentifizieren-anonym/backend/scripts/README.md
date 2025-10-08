@@ -157,3 +157,6 @@ Das System erstellt automatisch beim Start 2 Demo-Accounts:
 - **Supervisor**: https://dashboard.samebi.net/supervisor
 - **API**: https://api-check.samebi.net/api
 
+
+
+

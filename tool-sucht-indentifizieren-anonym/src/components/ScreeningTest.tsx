@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { ArrowRight, ArrowLeft, CheckCircle, AlertTriangle, Lock, Eye } from 'lucide-react';
+import { ArrowRight, ArrowLeft, CheckCircle, AlertTriangle } from 'lucide-react';
 import { questions, sections } from '../data/questions';
 import { Response, calculatePublicScores, calculateProfessionalScores, getRecommendations } from '../utils/scoring';
 import { testResultsAPI } from '../services/api';
@@ -293,30 +293,6 @@ const ScreeningTest: React.FC = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
         <div className="max-w-4xl mx-auto">
-          {/* Toggle View Button */}
-          <div className="mb-4 flex justify-end">
-            <button
-              onClick={() => setIsProView(!isProView)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isProView 
-                  ? 'bg-gray-800 text-white hover:bg-gray-700' 
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-            >
-              {isProView ? (
-                <>
-                  <Eye className="w-4 h-4" />
-                  Teilnehmer-Ansicht
-                </>
-              ) : (
-                <>
-                  <Lock className="w-4 h-4" />
-                  Berater-Ansicht
-                </>
-              )}
-            </button>
-          </div>
-
           {!isProView ? (
             // ÖFFENTLICHE ANSICHT (für Teilnehmer)
             <div className="bg-white rounded-2xl shadow-2xl p-8 animate-fade-in">

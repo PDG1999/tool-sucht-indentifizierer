@@ -10,6 +10,7 @@ import {
   User
 } from 'lucide-react';
 import DashboardOverview from './DashboardOverview';
+import SupervisorDashboard from './SupervisorDashboard';
 import ClientList from './ClientList';
 import ClientDetail from './ClientDetail';
 import Analytics from './Analytics';
@@ -20,9 +21,17 @@ type DashboardView = 'overview' | 'clients' | 'client-detail' | 'analytics' | 's
 
 interface DashboardLayoutProps {
   onLogout: () => void;
+  userRole?: 'counselor' | 'supervisor';
+  userName?: string;
+  userEmail?: string;
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout }) => {
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ 
+  onLogout, 
+  userRole = 'counselor',
+  userName = 'Dr. Maria Schmidt',
+  userEmail = 'm.schmidt@samebi.net'
+}) => {
   const [currentView, setCurrentView] = useState<DashboardView>('overview');
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -47,7 +56,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout }) => {
   const renderContent = () => {
     switch (currentView) {
       case 'overview':
-        return <DashboardOverview />;
+        // Show Supervisor Dashboard for supervisors, regular dashboard for counselors
+        return userRole === 'supervisor' ? <SupervisorDashboard /> : <DashboardOverview />;
       case 'clients':
         return <ClientList onClientSelect={handleClientSelect} />;
       case 'client-detail':
@@ -62,7 +72,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout }) => {
       case 'settings':
         return <SettingsComponent />;
       default:
-        return <DashboardOverview />;
+        return userRole === 'supervisor' ? <SupervisorDashboard /> : <DashboardOverview />;
     }
   };
 
@@ -126,12 +136,19 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout }) => {
         {/* User section */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3 mb-3">
-            <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-              <User className="h-4 w-4 text-gray-600" />
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+              userRole === 'supervisor' ? 'bg-purple-600' : 'bg-gray-300'
+            }`}>
+              <User className={`h-4 w-4 ${userRole === 'supervisor' ? 'text-white' : 'text-gray-600'}`} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">Dr. Maria Schmidt</p>
-              <p className="text-xs text-gray-500 truncate">m.schmidt@samebi.net</p>
+              <p className="text-sm font-medium text-gray-900 truncate">{userName}</p>
+              <p className="text-xs text-gray-500 truncate">{userEmail}</p>
+              {userRole === 'supervisor' && (
+                <span className="inline-block px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-700 rounded-full mt-1">
+                  Supervisor
+                </span>
+              )}
             </div>
           </div>
           <button
@@ -160,7 +177,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout }) => {
             <div className="flex items-center space-x-4">
               <div className="hidden sm:block">
                 <h1 className="text-lg font-semibold text-gray-900">
-                  {currentView === 'overview' && 'Dashboard'}
+                  {currentView === 'overview' && (userRole === 'supervisor' ? 'Supervisor Dashboard' : 'Dashboard')}
                   {currentView === 'clients' && 'Klienten-Management'}
                   {currentView === 'client-detail' && 'Klienten-Details'}
                   {currentView === 'analytics' && 'Analytics'}

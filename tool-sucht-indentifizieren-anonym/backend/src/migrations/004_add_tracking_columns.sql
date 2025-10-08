@@ -16,3 +16,7 @@ COMMENT ON COLUMN test_results.aborted_at_question IS 'Question number where tes
 COMMENT ON COLUMN test_results.completed_questions IS 'Number of questions answered';
 COMMENT ON COLUMN test_results.session_data IS 'Session tracking data (timing, metrics)';
 COMMENT ON COLUMN test_results.tracking_data IS 'Geo-location and device data';
+
+
+
+

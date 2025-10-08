@@ -46,3 +46,6 @@ async function hashPassword(password) {
 const password = process.argv[2];
 hashPassword(password);
 
+
+
+

@@ -65,8 +65,8 @@ router.get('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Test result not found' });
     }
     
-    // Check if test result belongs to counselor
-    if (testResult.counselor_id !== req.user.id) {
+    // Check if test result belongs to counselor OR user is supervisor
+    if (req.user.role !== 'supervisor' && testResult.counselor_id !== req.user.id) {
       return res.status(403).json({ error: 'Access denied' });
     }
     
@@ -277,8 +277,8 @@ router.put('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Test result not found' });
     }
     
-    // Check if test result belongs to counselor
-    if (testResult.counselor_id !== req.user.id) {
+    // Check if test result belongs to counselor OR user is supervisor
+    if (req.user.role !== 'supervisor' && testResult.counselor_id !== req.user.id) {
       return res.status(403).json({ error: 'Access denied' });
     }
     
@@ -298,6 +298,11 @@ router.put('/:id', authenticateToken, async (req, res) => {
 // Assign test result to counselor
 router.post('/:id/assign', authenticateToken, async (req, res) => {
   try {
+    // Only counselors and supervisors can assign tests
+    if (req.user.role !== 'counselor' && req.user.role !== 'supervisor') {
+      return res.status(403).json({ error: 'Access denied. Insufficient permissions.' });
+    }
+    
     const testResult = await TestResult.getById(req.params.id);
     
     if (!testResult) {

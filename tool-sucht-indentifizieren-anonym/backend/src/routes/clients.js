@@ -23,8 +23,8 @@ router.get('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Client not found' });
     }
     
-    // Check if client belongs to counselor
-    if (client.counselor_id !== req.user.id) {
+    // Check if client belongs to counselor OR user is supervisor
+    if (req.user.role !== 'supervisor' && client.counselor_id !== req.user.id) {
       return res.status(403).json({ error: 'Access denied' });
     }
     
@@ -70,8 +70,8 @@ router.put('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Client not found' });
     }
     
-    // Check if client belongs to counselor
-    if (client.counselor_id !== req.user.id) {
+    // Check if client belongs to counselor OR user is supervisor
+    if (req.user.role !== 'supervisor' && client.counselor_id !== req.user.id) {
       return res.status(403).json({ error: 'Access denied' });
     }
     
@@ -99,8 +99,8 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Client not found' });
     }
     
-    // Check if client belongs to counselor
-    if (client.counselor_id !== req.user.id) {
+    // Check if client belongs to counselor OR user is supervisor
+    if (req.user.role !== 'supervisor' && client.counselor_id !== req.user.id) {
       return res.status(403).json({ error: 'Access denied' });
     }
     

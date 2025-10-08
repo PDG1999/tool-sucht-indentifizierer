@@ -20,3 +20,7 @@ COMMENT ON COLUMN test_progress.session_id IS 'Unique session identifier from fr
 COMMENT ON COLUMN test_progress.responses IS 'Array of answered questions so far';
 COMMENT ON COLUMN test_progress.current_question IS 'Current question number (0-indexed)';
 COMMENT ON COLUMN test_progress.test_type IS 'Type of test (short, full)';
+
+
+
+

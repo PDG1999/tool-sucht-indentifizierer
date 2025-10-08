@@ -364,3 +364,9 @@ export function getAddictionTypeLabel(type: string): string {
   return labels[type] || type;
 }
 
+
+
+
+
+
+

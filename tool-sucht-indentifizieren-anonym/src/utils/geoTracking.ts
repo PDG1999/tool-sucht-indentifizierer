@@ -199,3 +199,7 @@ export async function getTrackingData(): Promise<TrackingData> {
     browserFingerprint: generateFingerprint()
   };
 }
+
+
+
+
