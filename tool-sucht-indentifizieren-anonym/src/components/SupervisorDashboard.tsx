@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   BarChart3, 
   Users, 
@@ -8,63 +8,142 @@ import {
   Eye,
   Download,
   MapPin,
-  Smartphone
+  Smartphone,
+  Loader2
 } from 'lucide-react';
+import api from '../services/api';
 
-// Mock data - wird später durch echte API-Daten ersetzt
-const mockSupervisorData = {
+interface SupervisorData {
   globalStats: {
-    totalTests: 1234,
-    totalCounselors: 45,
-    totalClients: 892,
-    avgCompletionRate: 78,
-    avgTestDuration: 485,
-    mostCriticalCategory: 'Spielsucht',
-  },
-  testsByRisk: [
-    { level: 'Niedrig', count: 450, percentage: 36.5, color: 'green' },
-    { level: 'Mittel', count: 380, percentage: 30.8, color: 'yellow' },
-    { level: 'Hoch', count: 290, percentage: 23.5, color: 'orange' },
-    { level: 'Kritisch', count: 114, percentage: 9.2, color: 'red' },
-  ],
+    totalTests: number;
+    totalCounselors: number;
+    totalClients: number;
+    avgCompletionRate: number;
+    avgTestDuration: number;
+    mostCriticalCategory: string;
+  };
+  testsByRisk: Array<{ level: string; count: number; percentage: number; color: string }>;
   abortAnalytics: {
-    totalAborts: 267,
-    abortRate: 21.6,
-    criticalQuestions: [
-      { questionId: 'f3_8', question: 'Wie oft spielen Sie Glücksspiele?', abortCount: 45, avgTimeBeforeAbort: 32 },
-      { questionId: 'f2_4', question: 'Haben Sie jemals versucht, Ihr Verhalten zu verbergen?', abortCount: 38, avgTimeBeforeAbort: 28 },
-      { questionId: 'f2_7', question: 'Wie viel Geld geben Sie aus?', abortCount: 31, avgTimeBeforeAbort: 41 },
-    ],
-  },
-  questionMetrics: {
-    avgTimePerQuestion: 12.1,
-    mostDifficultQuestions: [
-      { questionId: 'f3_8', avgTime: 45, changeRate: 0.32 },
-      { questionId: 'f2_7', avgTime: 41, changeRate: 0.28 },
-      { questionId: 'f2_4', avgTime: 38, changeRate: 0.25 },
-    ],
-  },
-  geographicData: [
-    { city: 'Berlin', tests: 245, criticalRate: 12.2 },
-    { city: 'München', tests: 189, criticalRate: 8.5 },
-    { city: 'Hamburg', tests: 167, criticalRate: 9.8 },
-    { city: 'Köln', tests: 134, criticalRate: 11.2 },
-  ],
-  deviceData: [
-    { type: 'Desktop', count: 645, percentage: 52.3 },
-    { type: 'Mobile', count: 456, percentage: 37.0 },
-    { type: 'Tablet', count: 133, percentage: 10.7 },
-  ],
-  counselorPerformance: [
-    { name: 'Dr. Mueller', clients: 45, tests: 89, avgRisk: 42 },
-    { name: 'Dr. Schmidt', clients: 38, tests: 76, avgRisk: 38 },
-    { name: 'Dr. Weber', clients: 32, tests: 64, avgRisk: 51 },
-  ],
-};
+    totalAborts: number;
+    abortRate: number;
+    criticalQuestions: Array<any>;
+  };
+  geographicData: Array<{ city: string; tests: number; criticalRate: number }>;
+  deviceData: Array<{ type: string; count: number; percentage: number }>;
+  counselorPerformance: Array<{ name: string; clients: number; tests: number; avgRisk: number }>;
+}
 
 const SupervisorDashboard: React.FC = () => {
   const [dateRange, setDateRange] = useState('30d');
   const [selectedView, setSelectedView] = useState<'overview' | 'analytics' | 'counselors'>('overview');
+  const [data, setData] = useState<SupervisorData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadSupervisorData();
+  }, [dateRange]);
+
+  const loadSupervisorData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Lade alle benötigten Daten parallel
+      const [testsData, counselorsData] = await Promise.all([
+        api.testResults.getAll(),
+        api.counselors.getStats(),
+      ]);
+
+      // Berechne Statistiken aus echten Daten
+      const totalTests = testsData.length;
+      const completedTests = testsData.filter((t: any) => !t.aborted);
+      const abortedTests = testsData.filter((t: any) => t.aborted);
+      
+      // Risiko-Verteilung
+      const riskCounts = {
+        'Niedrig': testsData.filter((t: any) => t.risk_level === 'low').length,
+        'Mittel': testsData.filter((t: any) => t.risk_level === 'moderate').length,
+        'Hoch': testsData.filter((t: any) => t.risk_level === 'high').length,
+        'Kritisch': testsData.filter((t: any) => t.risk_level === 'critical').length,
+      };
+
+      const testsByRisk = Object.entries(riskCounts).map(([level, count]) => ({
+        level,
+        count,
+        percentage: totalTests > 0 ? (count / totalTests) * 100 : 0,
+        color: level === 'Niedrig' ? 'green' : level === 'Mittel' ? 'yellow' : level === 'Hoch' ? 'orange' : 'red'
+      }));
+
+      // Geografische Daten
+      const geoMap = new Map<string, { count: number; critical: number }>();
+      testsData.forEach((t: any) => {
+        const city = t.tracking_data?.geo_data?.city || 'Unbekannt';
+        const existing = geoMap.get(city) || { count: 0, critical: 0 };
+        existing.count++;
+        if (t.risk_level === 'critical') existing.critical++;
+        geoMap.set(city, existing);
+      });
+
+      const geographicData = Array.from(geoMap.entries())
+        .map(([city, data]) => ({
+          city,
+          tests: data.count,
+          criticalRate: data.count > 0 ? (data.critical / data.count) * 100 : 0
+        }))
+        .sort((a, b) => b.tests - a.tests)
+        .slice(0, 5);
+
+      // Geräte-Daten
+      const deviceMap = new Map<string, number>();
+      testsData.forEach((t: any) => {
+        const device = t.tracking_data?.device_type || 'Unbekannt';
+        deviceMap.set(device, (deviceMap.get(device) || 0) + 1);
+      });
+
+      const deviceData = Array.from(deviceMap.entries())
+        .map(([type, count]) => ({
+          type,
+          count,
+          percentage: totalTests > 0 ? (count / totalTests) * 100 : 0
+        }))
+        .sort((a, b) => b.count - a.count);
+
+      // Berater-Performance
+      const counselorPerformance = counselorsData.map((c: any) => ({
+        name: c.name,
+        clients: parseInt(c.total_clients) || 0,
+        tests: parseInt(c.total_tests) || 0,
+        avgRisk: parseFloat(c.avg_risk_score) || 0
+      }));
+
+      setData({
+        globalStats: {
+          totalTests,
+          totalCounselors: counselorsData.length,
+          totalClients: counselorPerformance.reduce((sum: number, c: any) => sum + c.clients, 0),
+          avgCompletionRate: totalTests > 0 ? (completedTests.length / totalTests) * 100 : 0,
+          avgTestDuration: 0, // Wird später implementiert wenn test_duration in DB
+          mostCriticalCategory: 'Daten verfügbar', // Wird später implementiert
+        },
+        testsByRisk,
+        abortAnalytics: {
+          totalAborts: abortedTests.length,
+          abortRate: totalTests > 0 ? (abortedTests.length / totalTests) * 100 : 0,
+          criticalQuestions: [] // Wird später implementiert wenn mehr Daten vorhanden
+        },
+        geographicData,
+        deviceData,
+        counselorPerformance
+      });
+
+    } catch (err: any) {
+      console.error('Error loading supervisor data:', err);
+      setError(err.message || 'Fehler beim Laden der Daten');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getRiskColor = (level: string) => {
     switch (level.toLowerCase()) {
@@ -75,6 +154,49 @@ const SupervisorDashboard: React.FC = () => {
       default: return 'text-gray-600 bg-gray-50';
     }
   };
+
+  // Loading State
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Lade Supervisor-Daten...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
+          <AlertTriangle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-red-900 mb-2 text-center">Fehler beim Laden</h2>
+          <p className="text-red-700 text-center mb-4">{error}</p>
+          <button
+            onClick={loadSupervisorData}
+            className="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+          >
+            Erneut versuchen
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // No Data State
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Eye className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-600">Keine Daten verfügbar</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -152,7 +274,7 @@ const SupervisorDashboard: React.FC = () => {
                   <div>
                     <p className="text-gray-600 text-sm">Tests Gesamt</p>
                     <p className="text-3xl font-bold text-gray-900 mt-1">
-                      {mockSupervisorData.globalStats.totalTests}
+                      {data.globalStats.totalTests}
                     </p>
                   </div>
                   <BarChart3 className="w-10 h-10 text-blue-600" />
@@ -164,7 +286,7 @@ const SupervisorDashboard: React.FC = () => {
                   <div>
                     <p className="text-gray-600 text-sm">Berater</p>
                     <p className="text-3xl font-bold text-gray-900 mt-1">
-                      {mockSupervisorData.globalStats.totalCounselors}
+                      {data.globalStats.totalCounselors}
                     </p>
                   </div>
                   <Users className="w-10 h-10 text-green-600" />
@@ -176,7 +298,7 @@ const SupervisorDashboard: React.FC = () => {
                   <div>
                     <p className="text-gray-600 text-sm">Klienten</p>
                     <p className="text-3xl font-bold text-gray-900 mt-1">
-                      {mockSupervisorData.globalStats.totalClients}
+                      {data.globalStats.totalClients}
                     </p>
                   </div>
                   <Eye className="w-10 h-10 text-purple-600" />
@@ -188,7 +310,7 @@ const SupervisorDashboard: React.FC = () => {
                   <div>
                     <p className="text-gray-600 text-sm">Abschlussrate</p>
                     <p className="text-3xl font-bold text-gray-900 mt-1">
-                      {mockSupervisorData.globalStats.avgCompletionRate}%
+                      {data.globalStats.avgCompletionRate.toFixed(1)}%
                     </p>
                   </div>
                   <TrendingUp className="w-10 h-10 text-orange-600" />
@@ -202,7 +324,7 @@ const SupervisorDashboard: React.FC = () => {
                 Risiko-Verteilung
               </h3>
               <div className="space-y-4">
-                {mockSupervisorData.testsByRisk.map((risk) => (
+                {data.testsByRisk.map((risk) => (
                   <div key={risk.level}>
                     <div className="flex items-center justify-between mb-2">
                       <span className={`font-medium px-3 py-1 rounded-full ${getRiskColor(risk.level)}`}>
@@ -236,7 +358,7 @@ const SupervisorDashboard: React.FC = () => {
                   Geografische Verteilung
                 </h3>
                 <div className="space-y-3">
-                  {mockSupervisorData.geographicData.map((geo) => (
+                  {data.geographicData.map((geo) => (
                     <div key={geo.city} className="flex items-center justify-between">
                       <span className="text-gray-700">{geo.city}</span>
                       <div className="flex items-center space-x-4">
@@ -254,7 +376,7 @@ const SupervisorDashboard: React.FC = () => {
                   Geräte-Verteilung
                 </h3>
                 <div className="space-y-3">
-                  {mockSupervisorData.deviceData.map((device) => (
+                  {data.deviceData.map((device) => (
                     <div key={device.type} className="flex items-center justify-between">
                       <span className="text-gray-700">{device.type}</span>
                       <div className="flex items-center space-x-4">
@@ -281,26 +403,28 @@ const SupervisorDashboard: React.FC = () => {
                 <div>
                   <p className="text-gray-600 text-sm">Abbrüche Gesamt</p>
                   <p className="text-2xl font-bold text-red-600">
-                    {mockSupervisorData.abortAnalytics.totalAborts}
+                    {data.abortAnalytics.totalAborts}
                   </p>
                 </div>
                 <div>
                   <p className="text-gray-600 text-sm">Abbruch-Rate</p>
                   <p className="text-2xl font-bold text-red-600">
-                    {mockSupervisorData.abortAnalytics.abortRate}%
+                    {data.abortAnalytics.abortRate.toFixed(1)}%
                   </p>
                 </div>
                 <div>
                   <p className="text-gray-600 text-sm">Kritische Fragen</p>
                   <p className="text-2xl font-bold text-red-600">
-                    {mockSupervisorData.abortAnalytics.criticalQuestions.length}
+                    {data.abortAnalytics.criticalQuestions.length}
                   </p>
                 </div>
               </div>
               
-              <h4 className="font-bold text-gray-900 mb-3">Kritische Fragen:</h4>
-              <div className="space-y-3">
-                {mockSupervisorData.abortAnalytics.criticalQuestions.map((q) => (
+              {data.abortAnalytics.criticalQuestions.length > 0 && (
+                <>
+                  <h4 className="font-bold text-gray-900 mb-3">Kritische Fragen:</h4>
+                  <div className="space-y-3">
+                    {data.abortAnalytics.criticalQuestions.map((q) => (
                   <div key={q.questionId} className="bg-red-50 p-4 rounded-lg">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -325,12 +449,18 @@ const SupervisorDashboard: React.FC = () => {
                 Fragen-Metriken
               </h3>
               <p className="text-gray-600 mb-4">
-                Durchschnittliche Zeit pro Frage: <span className="font-bold text-blue-600">{mockSupervisorData.questionMetrics.avgTimePerQuestion}s</span>
+                <span className="font-medium">Fragen-Metriken werden mit mehr Daten angezeigt.</span>
               </p>
               
+              <p className="text-gray-600 text-center py-4">
+                Zusätzliche Analytics-Daten werden in zukünftigen Versionen verfügbar sein.
+              </p>
+            </div>
+
+            {/* Question Metrics - Hidden for now
               <h4 className="font-bold text-gray-900 mb-3">Schwierigste Fragen (längste Denkzeit):</h4>
               <div className="space-y-3">
-                {mockSupervisorData.questionMetrics.mostDifficultQuestions.map((q) => (
+                {data.questionMetrics.mostDifficultQuestions.map((q) => (
                   <div key={q.questionId} className="bg-yellow-50 p-4 rounded-lg flex items-center justify-between">
                     <span className="font-medium">{q.questionId}</span>
                     <div className="flex items-center space-x-6">
@@ -360,7 +490,7 @@ const SupervisorDashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {mockSupervisorData.counselorPerformance.map((counselor) => (
+                  {data.counselorPerformance.map((counselor) => (
                     <tr key={counselor.name}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {counselor.name}

@@ -1,11 +1,118 @@
-import React from 'react';
-import { BarChart3, Users, FileText, AlertTriangle, TrendingUp, Calendar } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { BarChart3, Users, FileText, AlertTriangle, TrendingUp, Calendar, Loader2 } from 'lucide-react';
 import { DashboardStats } from '../types/dashboard';
-import { mockDashboardStats } from '../data/mockData';
 import QuickActions from './QuickActions';
+import api from '../services/api';
 
 const DashboardOverview: React.FC = () => {
-  const stats = mockDashboardStats;
+  const [stats, setStats] = useState<any>(null);
+  const [recentTests, setRecentTests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Lade Tests und Clients
+      const [testsData, clientsData] = await Promise.all([
+        api.testResults.getAll(),
+        api.clients.getAll()
+      ]);
+
+      // Berechne Statistiken
+      const totalTests = testsData.length;
+      const totalClients = clientsData.length;
+      const thisMonth = new Date();
+      thisMonth.setDate(1);
+      const testsThisMonth = testsData.filter((t: any) => 
+        new Date(t.created_at) >= thisMonth
+      ).length;
+
+      const highRiskClients = testsData.filter((t: any) => 
+        t.risk_level === 'high' || t.risk_level === 'critical'
+      ).map((t: any) => t.client_id);
+      const uniqueHighRisk = new Set(highRiskClients).size;
+
+      // Risiko-Verteilung
+      const riskCounts = {
+        'Niedrig': testsData.filter((t: any) => t.risk_level === 'low').length,
+        'Mittel': testsData.filter((t: any) => t.risk_level === 'moderate').length,
+        'Hoch': testsData.filter((t: any) => t.risk_level === 'high').length,
+        'Kritisch': testsData.filter((t: any) => t.risk_level === 'critical').length,
+      };
+
+      const riskDistribution = Object.entries(riskCounts).map(([level, count]) => ({
+        level,
+        count
+      }));
+
+      // Neueste Tests (letzte 5)
+      const recent = testsData
+        .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 5)
+        .map((t: any) => ({
+          name: t.client_name || 'Anonym',
+          date: new Date(t.created_at).toLocaleDateString('de-DE'),
+          concern: t.primary_concern || 'Keine Angabe',
+          riskLevel: t.risk_level === 'critical' ? 'Kritisch' : 
+                     t.risk_level === 'high' ? 'Hoch' : 
+                     t.risk_level === 'moderate' ? 'Mittel' : 'Niedrig'
+        }));
+
+      setStats({
+        totalClients,
+        totalTests,
+        testsThisMonth,
+        highRiskClients: uniqueHighRisk,
+        riskDistribution
+      });
+
+      setRecentTests(recent);
+
+    } catch (err: any) {
+      console.error('Error loading dashboard data:', err);
+      setError(err.message || 'Fehler beim Laden der Dashboard-Daten');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Loading State
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Lade Dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+        <AlertTriangle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+        <h2 className="text-xl font-bold text-red-900 mb-2 text-center">Fehler</h2>
+        <p className="text-red-700 text-center mb-4">{error}</p>
+        <button
+          onClick={loadDashboardData}
+          className="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+        >
+          Erneut versuchen
+        </button>
+      </div>
+    );
+  }
+
+  if (!stats) return null;
 
   const StatCard = ({ 
     title, 
@@ -167,30 +274,19 @@ const DashboardOverview: React.FC = () => {
             <TrendingUp className="h-5 w-5 text-gray-400" />
           </div>
           <div className="space-y-1">
-            <RecentTest
-              name="Maria S."
-              date="15.01.24"
-              concern="Spielsucht"
-              riskLevel="Kritisch"
-            />
-            <RecentTest
-              name="Thomas K."
-              date="14.01.24"
-              concern="Alkohol"
-              riskLevel="Mittel"
-            />
-            <RecentTest
-              name="Anna M."
-              date="13.01.24"
-              concern="Keine"
-              riskLevel="Niedrig"
-            />
-            <RecentTest
-              name="Peter W."
-              date="12.01.24"
-              concern="Spielsucht"
-              riskLevel="Kritisch"
-            />
+            {recentTests.length > 0 ? (
+              recentTests.map((test, index) => (
+                <RecentTest
+                  key={index}
+                  name={test.name}
+                  date={test.date}
+                  concern={test.concern}
+                  riskLevel={test.riskLevel}
+                />
+              ))
+            ) : (
+              <p className="text-gray-500 text-center py-4">Keine Tests vorhanden</p>
+            )}
           </div>
         </div>
       </div>

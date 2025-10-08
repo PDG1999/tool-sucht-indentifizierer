@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Search, Filter, Plus, Eye, Edit, BarChart3, Calendar, Phone, Mail, Users, Grid, List } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Filter, Plus, Eye, Edit, BarChart3, Calendar, Phone, Mail, Users, Grid, List, Loader2, AlertTriangle } from 'lucide-react';
 import { Client, TestResult } from '../types/dashboard';
-import { mockClients, mockTestResults } from '../data/mockData';
 import MobileClientCard from './MobileClientCard';
+import api from '../services/api';
 
 interface ClientListProps {
   onClientSelect: (clientId: string) => void;
@@ -12,32 +12,60 @@ const ClientList: React.FC<ClientListProps> = ({ onClientSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRisk, setFilterRisk] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [clients] = useState<Client[]>(mockClients);
-  const [testResults] = useState<TestResult[]>(mockTestResults);
+  const [clients, setClients] = useState<any[]>([]);
+  const [testResults, setTestResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadClientsData();
+  }, []);
+
+  const loadClientsData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Lade Clients und TestResults parallel
+      const [clientsData, testsData] = await Promise.all([
+        api.clients.getAll(),
+        api.testResults.getAll()
+      ]);
+
+      setClients(clientsData);
+      setTestResults(testsData);
+
+    } catch (err: any) {
+      console.error('Error loading clients data:', err);
+      setError(err.message || 'Fehler beim Laden der Klienten');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getRiskLevel = (clientId: string) => {
     const latestTest = testResults
-      .filter(test => test.clientId === clientId)
-      .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())[0];
+      .filter(test => test.client_id === clientId)
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
     
     if (!latestTest) return { level: 'Unbekannt', color: 'gray' };
     
-    const riskMap = {
+    const riskMap: any = {
       'low': { level: 'Niedrig', color: 'green' },
       'moderate': { level: 'Mittel', color: 'yellow' },
       'high': { level: 'Hoch', color: 'orange' },
       'critical': { level: 'Kritisch', color: 'red' }
     };
     
-    return riskMap[latestTest.riskLevel] || { level: 'Unbekannt', color: 'gray' };
+    return riskMap[latestTest.risk_level] || { level: 'Unbekannt', color: 'gray' };
   };
 
   const getLastTestDate = (clientId: string) => {
     const latestTest = testResults
-      .filter(test => test.clientId === clientId)
-      .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())[0];
+      .filter(test => test.client_id === clientId)
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
     
-    return latestTest ? new Date(latestTest.completedAt).toLocaleDateString('de-DE') : 'Nie';
+    return latestTest ? new Date(latestTest.created_at).toLocaleDateString('de-DE') : 'Nie';
   };
 
   const filteredClients = clients.filter(client => {
@@ -60,6 +88,35 @@ const ClientList: React.FC<ClientListProps> = ({ onClientSelect }) => {
     };
     return colorMap[color as keyof typeof colorMap] || colorMap.gray;
   };
+
+  // Loading State
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Lade Klienten...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+        <AlertTriangle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+        <h2 className="text-xl font-bold text-red-900 mb-2 text-center">Fehler beim Laden</h2>
+        <p className="text-red-700 text-center mb-4">{error}</p>
+        <button
+          onClick={loadClientsData}
+          className="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+        >
+          Erneut versuchen
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
