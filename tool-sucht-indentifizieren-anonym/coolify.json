@@ -12,13 +12,13 @@
     "VITE_TARGET_AUDIENCE": "counselors",
     "VITE_APP_NAME": "SAMEBI Screening-Tool",
     "VITE_APP_DESCRIPTION": "Professionelles Sucht-Screening für Psychologen",
-    "VITE_DOMAIN": "screening.samebi.net",
-    "VITE_API_URL": "https://api.samebi.net",
+    "VITE_DOMAIN": "dashboard.samebi.net",
+    "VITE_API_URL": "https://api-check.samebi.net/api",
     "VITE_SUPPORT_EMAIL": "support@samebi.net",
     "VITE_COMPANY_NAME": "SAMEBI Deutschland"
   },
   "domains": [
-    "screening.samebi.net"
+    "dashboard.samebi.net"
   ],
   "ports": [
     {
@@ -35,7 +35,7 @@
   },
   "labels": {
     "traefik.enable": "true",
-    "traefik.http.routers.screening-professional.rule": "Host(`screening.samebi.net`)",
+    "traefik.http.routers.screening-professional.rule": "Host(`dashboard.samebi.net`)",
     "traefik.http.routers.screening-professional.tls": "true",
     "traefik.http.routers.screening-professional.tls.certresolver": "letsencrypt"
   }

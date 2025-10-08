@@ -193,8 +193,8 @@ psql -U postgres -d samebi_sucht -c "UPDATE counselors SET role = 'supervisor' W
 DATABASE_URL=postgresql://user:pass@host:5432/samebi_sucht
 JWT_SECRET=your-secret-key-here
 JWT_EXPIRES_IN=7d
-CORS_ORIGIN=https://screening.samebi.net
-FRONTEND_URL=https://screening.samebi.net
+CORS_ORIGIN=https://check.samebi.net,https://dashboard.samebi.net
+FRONTEND_URL=https://dashboard.samebi.net
 ```
 
 **✅ Bereits konfiguriert in Coolify**
@@ -211,13 +211,13 @@ FRONTEND_URL=https://screening.samebi.net
 
 ### Backend Health-Check:
 ```bash
-curl https://api.samebi.net/health
+curl https://api-check.samebi.net/health
 # Erwartete Antwort: {"status":"ok"}
 ```
 
 ### Frontend Health-Check:
 ```bash
-curl https://screening.samebi.net/
+curl https://dashboard.samebi.net/
 # Erwartete Antwort: HTML-Seite
 ```
 
@@ -244,7 +244,7 @@ git push origin main
 ## 🎯 Nächste Schritte nach Deployment
 
 1. ✅ **Login testen**
-   - URL: https://screening.samebi.net
+   - URL: https://dashboard.samebi.net
    - User: supervisor@samebi.net
    - Pass: SuperPass2024!
 
@@ -273,8 +273,9 @@ git push origin main
 
 - **GitHub Repo:** https://github.com/PDG1999/tool-sucht-indentifizierer.git
 - **Coolify Dashboard:** [Dein Coolify URL]
-- **Frontend:** https://screening.samebi.net
-- **Backend API:** https://api.samebi.net
+- **Test-Tool:** https://check.samebi.net
+- **Dashboard:** https://dashboard.samebi.net
+- **Backend API:** https://api-check.samebi.net
 - **Dokumentation:** `SUPERVISOR_DASHBOARD_FIXES.md`
 - **Account-Anleitung:** `SUPERVISOR_ACCOUNT_ANLEITUNG.md`
 

@@ -58,7 +58,7 @@ END $$;
 ## Schritt 3: Login testen 🔐
 
 ### Gehe zu deiner App:
-**URL:** https://screening.samebi.net (oder deine Domain)
+**URL:** https://dashboard.samebi.net
 
 ### Login-Daten:
 ```
@@ -122,13 +122,13 @@ Passwort:  SuperPass2024!
 
 ### Backend-Check:
 ```bash
-curl https://api.samebi.net/health
+curl https://api-check.samebi.net/health
 # Erwartete Antwort: {"status":"ok"}
 ```
 
 ### Frontend-Check:
 ```bash
-curl -I https://screening.samebi.net
+curl -I https://dashboard.samebi.net
 # Erwartete Antwort: HTTP 200 OK
 ```
 
