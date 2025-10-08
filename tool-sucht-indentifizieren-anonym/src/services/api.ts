@@ -158,9 +158,23 @@ export const authAPI = {
   },
 };
 
+// Counselors API (Supervisor only)
+export const counselorsAPI = {
+  // Get all counselors
+  getAll: async () => {
+    return apiCall('/counselors');
+  },
+
+  // Get counselor statistics
+  getStats: async () => {
+    return apiCall('/counselors/stats');
+  },
+};
+
 export default {
   testResults: testResultsAPI,
   clients: clientsAPI,
   auth: authAPI,
+  counselors: counselorsAPI,
 };
 
