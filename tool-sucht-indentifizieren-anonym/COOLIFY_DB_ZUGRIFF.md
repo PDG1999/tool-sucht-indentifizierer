@@ -227,3 +227,5 @@ samebi_sucht=# \q
 
 **Viel Erfolg mit der Datenbank! 🎉**
 
+
+

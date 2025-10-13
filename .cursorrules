@@ -1,0 +1,759 @@
+# 🌍 UNIVERSAL CURSOR RULES
+# Version: 1.0 | Works with ALL programming languages automatically
+# Repository: https://github.com/PDG1999/pdg-cursorrules
+# 
+# This file automatically adapts to ANY programming language/framework
+# Just copy to your project root as '.cursorrules' and Cursor does the rest!
+
+## 🧠 UNIVERSAL AI BEHAVIOR (works for ANY language)
+- **NO Apologies**: Fix errors immediately with explanation, don't apologize  
+- **Complete Solutions**: Show FULL file content, never truncated snippets
+- **Test-Driven Development**: Write tests first, then implement code to pass tests
+- **Security First**: Consider security implications in every code suggestion
+- **Performance Aware**: Always consider performance impact of changes
+- **Explain WHY**: Always explain reasoning behind architectural decisions
+- **Error Handling**: Include comprehensive error handling in all suggestions
+- **Documentation**: Provide clear comments and documentation for complex logic
+
+## 🏗️ UNIVERSAL QUALITY STANDARDS (apply to ALL programming languages)
+
+### 🛡️ SECURITY BY DEFAULT
+```
+ALWAYS enforce these security principles:
+- NEVER trust user input - validate and sanitize everything
+- Use parameterized queries for database operations (prevent SQL injection)
+- Hash passwords using proper algorithms (bcrypt, Argon2)
+- Implement proper authentication and authorization
+- Use HTTPS for all external communications
+- Never hardcode secrets, API keys, or passwords in source code
+- Implement proper session management
+- Log security events for monitoring
+```
+
+### ⚡ PERFORMANCE CONSCIOUSNESS  
+```
+Optimize for performance by default:
+- Avoid N+1 query problems in database operations
+- Use appropriate data structures for the task
+- Implement caching strategies where beneficial
+- Minimize network requests and payload sizes
+- Use lazy loading for large datasets
+- Profile and measure performance improvements
+- Consider memory usage and garbage collection
+```
+
+### 🔧 ERROR HANDLING EXCELLENCE
+```
+Every function that can fail MUST:
+- Handle errors gracefully with try/catch or equivalent
+- Provide meaningful error messages for users
+- Log detailed error information for developers
+- Implement proper fallback mechanisms
+- Fail fast when recovery is impossible
+- Use proper exception types/error codes
+```
+
+### 📁 CODE ORGANIZATION PRINCIPLES
+```
+Maintain clean architecture:
+- Single Responsibility Principle (one function, one purpose)
+- DRY - Don't Repeat Yourself
+- Clear and descriptive naming conventions
+- Consistent file and folder structure
+- Separate concerns (business logic, UI, data access)
+- Keep functions under 50 lines when possible
+- Use appropriate design patterns
+```
+
+### 🧪 TESTING DISCIPLINE
+```
+Implement comprehensive testing:
+- Unit tests for business logic functions
+- Integration tests for API endpoints and database operations
+- End-to-end tests for critical user workflows
+- Test edge cases and error conditions
+- Maintain minimum 80% test coverage
+- Write tests BEFORE implementing features (TDD)
+- Use proper mocking and test data
+```
+
+## 🚫 UNIVERSAL ANTI-PATTERNS (forbidden in ANY language)
+
+### ❌ NEVER DO THESE (regardless of programming language):
+- Hardcode secrets, passwords, API keys, or configuration in source code
+- Ignore error conditions or fail silently without logging
+- Use global variables for application state management
+- Write functions longer than 50 lines without compelling reason
+- Leave debug statements (console.log, print, var_dump) in production code
+- Skip input validation on user-provided data
+- Use deprecated or known-vulnerable libraries
+- Write code without any comments or documentation
+- Ignore linting warnings without documented reasons
+- Mix business logic directly with presentation logic
+- Use magic numbers or strings without named constants
+- Implement custom crypto instead of using proven libraries
+
+## 🎯 ADAPTIVE BEHAVIOR PATTERNS
+
+### 🔍 AUTO-DETECTION & ADAPTATION
+```
+Cursor will automatically detect and adapt to:
+
+FRONTEND FRAMEWORKS:
+- React: Use functional components, hooks, TypeScript interfaces
+- Vue: Use Composition API, TypeScript, single-file components  
+- Angular: Use services, dependency injection, RxJS patterns
+- Svelte: Use reactive statements and proper component lifecycle
+
+BACKEND TECHNOLOGIES:
+- Node.js: Use Express patterns, middleware, async/await
+- Python: Use type hints, proper exception handling, PEP 8
+- PHP: Use PSR standards, prepared statements, input sanitization
+- C#: Use async/await, dependency injection, Entity Framework patterns
+- Go: Use proper error handling, goroutines, standard library patterns
+- Rust: Use Result<T,E>, proper ownership, memory safety patterns
+
+CMS & FRAMEWORKS:
+- WordPress: Use WordPress Coding Standards, hooks, sanitization functions
+- Laravel: Use Eloquent ORM, Artisan commands, proper MVC structure
+- Django: Use Django ORM, class-based views, proper URL routing
+```
+
+### 🎨 LANGUAGE-SPECIFIC ADAPTATIONS
+
+#### When JavaScript/TypeScript is detected:
+```typescript
+// ✅ EXCELLENT PATTERNS:
+interface ComponentProps {
+  data: DataType;
+  onAction?: (item: DataType) => void;
+  className?: string;
+}
+
+export const Component: React.FC<ComponentProps> = ({ 
+  data, 
+  onAction,
+  className = ""
+}) => {
+  const [loading, setLoading] = useState(false);
+  
+  useEffect(() => {
+    // Effect logic with proper cleanup
+    const cleanup = () => {
+      // Cleanup subscriptions, timers, etc.
+    };
+    
+    return cleanup;
+  }, []);
+  
+  return <div className={className}>{/* Implementation */}</div>;
+};
+
+// FORBIDDEN in JavaScript/TypeScript:
+// ❌ var (use const/let)
+// ❌ class components in React
+// ❌ Missing key in .map()
+// ❌ Inline styles (use CSS modules/Tailwind)
+// ❌ useEffect without cleanup function
+// ❌ Uncontrolled form inputs without proper state
+```
+
+#### When Python is detected:
+```python
+# ✅ EXCELLENT PATTERNS:
+from typing import List, Optional, Dict, Any
+import logging
+
+logger = logging.getLogger(__name__)
+
+def process_data(
+    data: List[Dict[str, Any]], 
+    validate: bool = True
+) -> Optional[ProcessedResult]:
+    """Process data with proper error handling and type hints.
+    
+    Args:
+        data: Input data to process
+        validate: Whether to perform input validation
+        
+    Returns:
+        Processed result or None if processing fails
+        
+    Raises:
+        ValueError: If input validation fails
+        ProcessingError: If data processing encounters an error
+    """
+    try:
+        if validate:
+            _validate_input(data)
+            
+        result = _perform_processing(data)
+        logger.info(f"Successfully processed {len(data)} items")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Data processing failed: {e}")
+        raise
+
+# FORBIDDEN in Python:
+# ❌ Bare except clauses
+# ❌ Global variables for state
+# ❌ Missing type hints
+# ❌ Hardcoded file paths
+# ❌ print() statements (use logging)
+```
+
+#### When WordPress/PHP is detected:
+```php
+<?php
+// ✅ EXCELLENT PATTERNS:
+function handle_user_submission() {
+    // Verify nonce for security
+    if (!wp_verify_nonce($_POST['nonce'], 'user_action')) {
+        wp_die('Security check failed');
+    }
+    
+    // Sanitize all inputs
+    $user_input = sanitize_text_field($_POST['user_data']);
+    $email = sanitize_email($_POST['email']);
+    
+    // Validate inputs
+    if (empty($user_input) || !is_email($email)) {
+        return new WP_Error('invalid_input', 'Please provide valid data');
+    }
+    
+    // Use prepared statements for database operations
+    global $wpdb;
+    $result = $wpdb->insert(
+        $wpdb->prefix . 'custom_table',
+        array(
+            'user_data' => $user_input,
+            'email' => $email,
+            'created_at' => current_time('mysql')
+        ),
+        array('%s', '%s', '%s')
+    );
+    
+    if ($result === false) {
+        error_log('Database insert failed: ' . $wpdb->last_error);
+        return new WP_Error('db_error', 'Failed to save data');
+    }
+    
+    return true;
+}
+
+// FORBIDDEN in WordPress/PHP:
+// ❌ Direct $_POST/$_GET usage without sanitization
+// ❌ SQL queries without $wpdb->prepare()
+// ❌ Missing nonce verification
+// ❌ Hardcoded WordPress paths
+// ❌ var_dump() in production code
+?>
+```
+
+#### When C#/.NET is detected:
+```csharp
+// ✅ EXCELLENT PATTERNS:
+public async Task<ActionResult<User>> GetUserAsync(
+    int id, 
+    CancellationToken cancellationToken = default)
+{
+    try
+    {
+        if (id <= 0)
+        {
+            return BadRequest("Invalid user ID");
+        }
+
+        var user = await _context.Users
+            .Where(u => u.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (user == null)
+        {
+            return NotFound($"User with ID {id} not found");
+        }
+
+        return Ok(user);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Failed to retrieve user {UserId}", id);
+        return StatusCode(500, "Internal server error");
+    }
+}
+
+// FORBIDDEN in C#:
+// ❌ Blocking async calls (.Result, .Wait())
+// ❌ Missing CancellationToken in async methods
+// ❌ Raw SQL without parameterization
+// ❌ Missing exception handling
+```
+
+#### When Go is detected:
+```go
+// ✅ EXCELLENT PATTERNS:
+func ProcessUserData(ctx context.Context, data []UserData) (*ProcessedResult, error) {
+    if len(data) == 0 {
+        return nil, fmt.Errorf("no data provided")
+    }
+
+    // Validate input data
+    for i, item := range data {
+        if err := validateUserData(item); err != nil {
+            return nil, fmt.Errorf("invalid data at index %d: %w", i, err)
+        }
+    }
+
+    // Process with context cancellation support
+    select {
+    case <-ctx.Done():
+        return nil, ctx.Err()
+    default:
+        result, err := performProcessing(data)
+        if err != nil {
+            return nil, fmt.Errorf("processing failed: %w", err)
+        }
+        return result, nil
+    }
+}
+
+// FORBIDDEN in Go:
+// ❌ Ignoring errors (_, err := func(); if err != nil...)
+// ❌ Not using context.Context for cancellation
+// ❌ panic() in library code
+// ❌ Not handling goroutine lifecycle properly
+```
+
+#### When Python Data Science/ML is detected:
+```python
+# ✅ DATA SCIENCE PATTERNS:
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+import logging
+
+# Set reproducible seeds
+np.random.seed(42)
+
+def prepare_dataset(df: pd.DataFrame, target_column: str) -> tuple:
+    """Prepare dataset with proper validation and reproducible splits.
+    
+    Args:
+        df: Input dataframe
+        target_column: Name of target column
+        
+    Returns:
+        Tuple of (X_train, X_test, y_train, y_test)
+        
+    Raises:
+        ValueError: If target column missing or data invalid
+    """
+    # Data validation
+    if target_column not in df.columns:
+        raise ValueError(f"Target column '{target_column}' not found")
+    
+    if df.isnull().sum().sum() > 0:
+        logging.warning("Missing values detected, handling with forward fill")
+        df = df.fillna(method='ffill')
+    
+    # Optimize memory usage
+    for col in df.select_dtypes(include=['object']).columns:
+        if col != target_column:
+            df[col] = df[col].astype('category')
+    
+    # Prepare features and target
+    X = df.drop(columns=[target_column])
+    y = df[target_column]
+    
+    # Reproducible split
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, stratify=y
+    )
+    
+    logging.info(f"Dataset prepared: {X_train.shape[0]} training samples")
+    return X_train, X_test, y_train, y_test
+
+# FORBIDDEN in Data Science:
+# ❌ Not setting random seeds
+# ❌ No data validation
+# ❌ Memory-inefficient pandas operations
+# ❌ Missing experiment documentation
+```
+
+## ✅ UNIVERSAL VERIFICATION CHECKLIST
+
+### Before completing ANY coding task, verify:
+✅ **Security**: Input validation implemented? No hardcoded secrets?
+✅ **Error Handling**: Comprehensive try/catch with meaningful messages?
+✅ **Performance**: No obvious bottlenecks or inefficient algorithms?
+✅ **Testing**: Code is testable? Test cases included where appropriate?
+✅ **Documentation**: Complex logic documented with clear comments?
+✅ **Standards**: Code follows language/framework conventions?
+✅ **Maintainability**: Future developers can easily understand this code?
+✅ **Type Safety**: Proper types/interfaces defined (for typed languages)?
+
+## 🎯 SMART WORKFLOW COMMANDS
+
+### Universal Commands (work with any language/framework):
+```
+DEBUGGING: 
+"Debug @file [FILENAME] systematically - reproduce issue, isolate cause, implement fix, verify solution"
+
+CODE QUALITY: 
+"Review @file [FILENAME] for security vulnerabilities, performance issues, and adherence to best practices"  
+
+TESTING: 
+"Add comprehensive tests to @file [FILENAME] covering normal cases, edge cases, and error conditions"
+
+DOCUMENTATION: 
+"Add proper documentation to @file [FILENAME] following language/framework documentation standards"
+
+ARCHITECTURE: 
+"Review architecture of @folder [FOLDERNAME] and suggest improvements following established patterns"
+
+SECURITY AUDIT: 
+"Perform security audit of @file [FILENAME] checking for common vulnerabilities and security best practices"
+
+PERFORMANCE: 
+"Analyze and optimize @file [FILENAME] for performance, focusing on bottlenecks and efficiency improvements"
+
+REFACTORING:
+"Refactor @file [FILENAME] to improve maintainability while preserving functionality"
+
+CODE REVIEW:
+"Review this code following our established patterns and suggest improvements"
+```
+
+## 🔄 CONTINUOUS ADAPTATION & LEARNING
+
+### Rule Evolution Process:
+```
+WHEN bugs occur frequently:
+→ Add specific prevention rules to avoid similar issues
+
+WHEN new patterns emerge:
+→ Update rules to reflect current best practices
+
+WHEN team feedback indicates issues:
+→ Incorporate team preferences and standards
+
+WHEN performance problems arise:
+→ Add performance-focused rules and monitoring
+
+WHEN security issues are discovered:
+→ Strengthen security rules and validation requirements
+```
+
+### Context Building:
+```
+For each project, automatically consider:
+1. Primary language and version from files/dependencies
+2. Framework and its current version
+3. Project architecture (MVC, microservices, monolith, etc.)
+4. Database technology and ORM in use
+5. Testing framework and coverage expectations
+6. Deployment target and environment considerations
+7. Team size and collaboration patterns
+```
+
+## 💡 ADVANCED FEATURES
+
+### Multi-Language Project Support:
+```
+For projects using multiple languages:
+- Apply appropriate rules based on file extension context
+- Maintain consistency in cross-language interactions (APIs, data formats)
+- Use proper serialization/deserialization between language boundaries
+- Implement consistent error handling across language barriers
+```
+
+### Framework Integration Intelligence:
+```
+Automatically recognize and optimize for:
+- Build tools (Webpack, Vite, Rollup, Parcel, etc.)
+- Package managers (npm, yarn, pip, composer, cargo, etc.)
+- CI/CD pipelines (GitHub Actions, Jenkins, GitLab CI, etc.)
+- Cloud platforms (AWS, Azure, GCP, Vercel, Netlify)
+- Database migrations and schema management
+- API documentation tools (Swagger/OpenAPI, Postman, etc.)
+```
+
+## 🚀 PROJECT-SPECIFIC CUSTOMIZATION
+
+### Add these sections at the end for project-specific needs:
+
+```
+## 🎯 PROJECT-SPECIFIC RULES
+# Uncomment and customize as needed:
+# - Use our internal API naming conventions
+# - Follow company-specific error code standards  
+# - Include project-specific logging requirements
+# - Implement custom authentication patterns
+
+## 👥 TEAM COLLABORATION RULES  
+# Uncomment and customize as needed:
+# - Use Conventional Commits (feat:, fix:, docs:, etc.)
+# - Include PR template requirements
+# - Follow code review checklist standards
+# - Maintain API documentation standards
+
+## 🏢 INDUSTRY-SPECIFIC ADAPTATIONS
+# Uncomment and customize as needed:
+# FINTECH: Extra security measures, audit logging, compliance requirements
+# HEALTHCARE: HIPAA compliance, data encryption, access logging
+# E-COMMERCE: PCI compliance, inventory management, transaction safety
+# EDUCATION: FERPA compliance, accessibility standards, data protection
+```
+
+---
+
+## 📚 USAGE EXAMPLES
+
+### For a new React component:
+**Prompt**: "Create a user profile component with form validation"
+**Expected**: TypeScript interfaces, functional component with hooks, proper error handling, accessibility features
+
+### For a Python API endpoint:
+**Prompt**: "Create an API endpoint to handle user registration"  
+**Expected**: Type hints, input validation, proper HTTP status codes, error logging, security considerations
+
+### For WordPress functionality:
+**Prompt**: "Create a custom post type with meta fields"
+**Expected**: WordPress coding standards, proper sanitization, hooks usage, security nonces
+
+### For database operations:
+**Prompt**: "Create a function to update user preferences"
+**Expected**: Parameterized queries, transaction handling, error recovery, proper logging
+
+---
+
+---
+
+## 🎯 SAMEBI MULTI-TOOL PLATFORM - SPEZIFISCHE REGELN
+
+### 🏗️ TEMPLATE-FIRST ARCHITEKTUR
+```
+KRITISCHE TEMPLATE-REGELN:
+- JEDES neue Tool MUSS vom Master-Template abgeleitet sein
+- KEINE Duplikation von Code zwischen Tools
+- Content kommt IMMER aus shared-cms/, nie hardcoded
+- Multi-Language Support (DE/EN/ES) ist PFLICHT für jedes Tool
+- White-Label ready: Logo, Farben, Branding dynamisch
+- Lead-Capture standardisiert über alle Tools
+```
+
+### 📊 MULTI-TOOL MANAGEMENT
+```
+TOOL-ORGANISATION:
+- Naming-Convention: tool-[name]/ (kleingeschrieben, Bindestriche)
+- Jedes Tool = eigenes Git-Directory
+- Shared Components in shared-components/
+- Shared Content in shared-cms/
+- Subdomain-Struktur: [tool-name].samebi.net
+- Sprach-Varianten: [tool-name]-de/es/en oder separate Subdomains
+```
+
+### 🌐 SUBDOMAIN & DEPLOYMENT STRATEGIE
+```
+DEPLOYMENT-REGELN:
+- 1 Tool = 3 Sprach-Versionen (DE/ES/EN)
+- Separate Subdomains pro Sprache für SEO
+- Beispiel: stress-test.samebi.net (DE)
+           test-estres.samebi.net (ES)
+           stress-check.samebi.net (EN)
+- Coolify Auto-Deployment via Git Push
+- SSL automatisch (Let's Encrypt)
+- Monitoring mit Uptime Robot
+```
+
+### 🔄 AUTOMATION-FIRST
+```
+N8N WORKFLOW-REGELN:
+- Deployment MUSS automatisiert sein
+- Lead-Processing automatisch zu CRM
+- Content-Updates deployen automatisch
+- Monitoring-Alerts automatisch
+- Backup täglich automatisch
+- Analytics-Reports wöchentlich automatisch
+```
+
+### 💾 DATABASE & BACKEND
+```
+BACKEND-ARCHITEKTUR:
+- PostgreSQL als Single Source of Truth
+- Redis für Caching & Session Management
+- PostgREST für automatische REST API
+- KEINE Tool-spezifische Datenbank-Logik
+- Shared Backend: herramientas-backend/
+- API Endpoint-Struktur: api.samebi.net/tools/[tool-name]/
+```
+
+### 🎨 UI/UX KONSISTENZ
+```
+FRONTEND-REGELN:
+- React + TypeScript + Vite (Standard-Stack)
+- Tailwind CSS für alle Styles
+- KEINE Inline-Styles
+- Responsive Design (Mobile-First)
+- Accessibility (WCAG 2.1)
+- Loading-States für alle async Operations
+- Error-Boundaries für robuste UX
+```
+
+### 📧 LEAD-CAPTURE SYSTEM
+```
+LEAD-PROCESSING:
+- Jedes Tool MUSS Lead-Capture haben
+- Email-Validation client- UND server-side
+- Lead-Scoring basierend auf Tool & Completion
+- Automatische Email-Sequenz über Brevo
+- CRM-Integration (Airtable oder PostgreSQL)
+- Analytics-Tracking (Google Analytics)
+- DSGVO-konform: Opt-in required
+```
+
+### 🌍 MULTI-LANGUAGE SUPPORT
+```
+I18N-REGELN:
+- Translations in src/i18n/[de|en|es].json
+- NIEMALS hardcoded Texte im Code
+- Language-Detection via Environment Variable
+- SEO-Meta-Tags sprachspezifisch
+- Hreflang-Tags für alternate Sprachen
+- Date/Number-Formatting lokalisiert
+```
+
+### 💰 MONETARISIERUNG & TRACKING
+```
+BUSINESS-LOGIC:
+- Track Source-Tool für jeden Lead
+- Conversion-Funnel Tracking
+- Payment-Integration via Stripe
+- Kurs-Zugang über course_access Tabelle
+- White-Label Client Management
+- Revenue-Attribution pro Tool/Sprache
+```
+
+### 🔐 SECURITY & COMPLIANCE
+```
+SICHERHEITS-REGELN:
+- DSGVO-konform: Server in EU (Hetzner)
+- SSL/TLS für alle Verbindungen
+- Input-Validierung überall
+- SQL-Injection Prevention (Parameterized Queries)
+- XSS-Protection (Content Security Policy)
+- Rate-Limiting auf API-Ebene
+- Secrets nur in Environment Variables
+```
+
+### 📊 MONITORING & ANALYTICS
+```
+ÜBERWACHUNG:
+- Uptime-Monitoring für ALLE Tools
+- Performance-Metriken (Core Web Vitals)
+- Error-Tracking (Console-Errors loggen)
+- Conversion-Tracking pro Tool
+- A/B-Testing Support
+- Dashboard: dashboard.samebi.net zeigt Übersicht
+```
+
+## 🚀 SAMEBI-SPEZIFISCHE WORKFLOW-COMMANDS
+
+### Tool Development:
+```
+"Erstelle neues Assessment-Tool basierend auf Master-Template mit Multi-Language Support und Lead-Capture"
+"Optimiere Tool-Performance für Core Web Vitals Score >90"
+"Implementiere A/B-Testing für Landing-Page Varianten"
+```
+
+### Template System:
+```
+"Erweitere Master-Template um neue Component-Type [Quiz|Calculator|Assessment]"
+"Generiere Tool-Config für [Tool-Name] mit Fragen-Set"
+"Deploy neues Tool in 3 Sprachen mit automatischer DNS-Konfiguration"
+```
+
+### Backend & API:
+```
+"Erstelle neuen API-Endpoint für Tool-Analytics"
+"Optimiere PostgreSQL Queries mit Indexing"
+"Implementiere Redis-Caching für häufige Abfragen"
+```
+
+### Automation:
+```
+"Erstelle N8N Workflow für automatisches Tool-Deployment"
+"Implementiere automatische Content-Updates aus CMS"
+"Setup automatische Backup-Strategie für PostgreSQL"
+```
+
+## 📋 SAMEBI-SPEZIFISCHE CHECKLISTE
+
+### Vor jedem Tool-Launch:
+✅ **Multi-Language**: Alle 3 Sprachen (DE/EN/ES) funktionieren  
+✅ **Lead-Capture**: Email-Validation & CRM-Integration aktiv  
+✅ **SEO**: Meta-Tags, Open Graph, Structured Data  
+✅ **Performance**: Lighthouse Score >90  
+✅ **Mobile**: Touch-optimiert, responsive  
+✅ **Analytics**: Google Analytics tracking funktioniert  
+✅ **Monitoring**: Uptime Robot konfiguriert  
+✅ **SSL**: HTTPS funktioniert  
+
+### Vor jedem Deployment:
+✅ **Template-Konform**: Kein duplizierter Code  
+✅ **CMS-Integration**: Content kommt von shared-cms  
+✅ **API-Kompatibel**: Backend-Endpoints funktionieren  
+✅ **Error-Handling**: Alle async Calls mit try/catch  
+✅ **Environment Variables**: Keine Secrets im Code  
+✅ **Git-Clean**: Keine build-artifacts committed  
+✅ **Tests**: Kritische Flows getestet  
+✅ **Documentation**: README.md aktualisiert  
+
+### Vor jedem Release:
+✅ **Backup**: PostgreSQL Backup erfolgreich  
+✅ **Load-Testing**: Performance unter Last getestet  
+✅ **Cross-Browser**: Chrome, Firefox, Safari, Edge  
+✅ **Mobile-Testing**: iOS & Android  
+✅ **Security-Scan**: Keine bekannten Vulnerabilities  
+✅ **Analytics**: Dashboard zeigt korrekte Daten  
+✅ **Rollback-Plan**: Schnelles Rollback möglich  
+✅ **Stakeholder-Approval**: Team hat approved  
+
+---
+
+## 🎯 SAMEBI BUSINESS-ZIELE ALIGNMENT
+
+### Exit-Readiness (5-15M€ Ziel):
+```
+CODE-QUALITÄT für Acquisition:
+- Clean Architecture (nachvollziehbar für Käufer)
+- Standard Tech-Stack (React, PostgreSQL, keine Exotic-Tech)
+- Vollständige Dokumentation
+- Hohe Test-Coverage (>80%)
+- Skalierbare Infrastructure (bewiesene Skalierung)
+- Kein Vendor-Lock-in (self-hosted, open-source wo möglich)
+```
+
+### Platform-Skalierung (150+ Apps Ziel):
+```
+SKALIERUNGS-PRINZIPIEN:
+- Template-System für schnelle Tool-Erstellung
+- Automation für repetitive Tasks
+- Monitoring für frühzeitige Problem-Erkennung
+- Caching für Performance unter Last
+- Horizontal-Scaling möglich (mehr Server bei Bedarf)
+- Content-Delivery optimiert (CDN-ready)
+```
+
+---
+
+**🎯 Diese SAMEBI-spezifischen Regeln ergänzen die universellen Cursor-Regeln und stellen sicher, dass alle Entwicklungen aligned sind mit der Multi-Tool Platform Vision, der Template-First Architektur und dem 5-15M€ Exit-Ziel.**
+
+---
+
+**🌟 This universal rules system adapts intelligently to your specific technology stack while maintaining consistent quality standards across all programming languages and frameworks.**
+
+**💡 Diese .cursorrules macht Cursor zum perfekten Co-Piloten für Ihr SAMEBI-Projekt - jede Code-Suggestion wird automatisch auf diese Standards geprüft!**
+
+**🚀 Mit diesen Regeln können Sie 150+ Tools entwickeln, die perfekt aufeinander abgestimmt sind und höchste Qualitätsstandards erfüllen!**

@@ -176,3 +176,5 @@ CORS_ORIGIN=https://check.samebi.net,https://dashboard.samebi.net
 
 **Bei Fragen oder CORS-Problemen: Diese Datei prüfen! ✅**
 
+
+

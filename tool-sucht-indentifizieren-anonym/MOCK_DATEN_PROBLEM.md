@@ -229,3 +229,5 @@ Du erkennst Mock-Daten an:
 
 **Nächster Schritt:** Frontend-Komponenten auf echte API umstellen (siehe oben)
 
+
+
