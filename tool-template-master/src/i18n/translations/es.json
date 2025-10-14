@@ -1,0 +1,45 @@
+{
+  "common": {
+    "start": "Empezar Ahora",
+    "next": "Siguiente",
+    "back": "Atrás",
+    "finish": "Finalizar",
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "retry": "Intentar de nuevo"
+  },
+  "progress": {
+    "question": "Pregunta {{current}} de {{total}}",
+    "complete": "¡Completo!"
+  },
+  "leadCapture": {
+    "title": "Obtenga Su Resultado",
+    "subtitle": "Ingrese su dirección de correo electrónico para recibir su resultado detallado",
+    "emailLabel": "Dirección de Correo Electrónico",
+    "emailPlaceholder": "su@email.com",
+    "privacy": "Acepto la política de privacidad",
+    "submit": "Mostrar Resultado",
+    "sending": "Enviando...",
+    "success": "¡Gracias! Aquí está su resultado.",
+    "error": "No se pudo enviar el correo electrónico. Por favor, inténtelo de nuevo."
+  },
+  "result": {
+    "title": "Su Resultado",
+    "score": "Su Puntuación: {{score}} de 100",
+    "level": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto",
+      "critical": "Crítico"
+    },
+    "downloadPdf": "Descargar PDF",
+    "shareResult": "Compartir Resultado"
+  },
+  "validation": {
+    "required": "Este campo es obligatorio",
+    "email": "Por favor, ingrese una dirección de correo electrónico válida",
+    "min": "Se requieren al menos {{min}} caracteres",
+    "max": "Máximo {{max}} caracteres permitidos"
+  }
+}
+

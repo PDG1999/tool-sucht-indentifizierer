@@ -1,0 +1,45 @@
+{
+  "common": {
+    "start": "Start Now",
+    "next": "Next",
+    "back": "Back",
+    "finish": "Finish",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Try again"
+  },
+  "progress": {
+    "question": "Question {{current}} of {{total}}",
+    "complete": "Complete!"
+  },
+  "leadCapture": {
+    "title": "Get Your Result",
+    "subtitle": "Enter your email address to receive your detailed result",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "your@email.com",
+    "privacy": "I agree to the privacy policy",
+    "submit": "Show Result",
+    "sending": "Sending...",
+    "success": "Thank you! Here is your result.",
+    "error": "Could not send email. Please try again."
+  },
+  "result": {
+    "title": "Your Result",
+    "score": "Your Score: {{score}} of 100",
+    "level": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "downloadPdf": "Download PDF",
+    "shareResult": "Share Result"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "min": "At least {{min}} characters required",
+    "max": "Maximum {{max}} characters allowed"
+  }
+}
+
