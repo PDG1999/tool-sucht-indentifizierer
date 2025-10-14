@@ -748,6 +748,36 @@ SKALIERUNGS-PRINZIPIEN:
 
 ---
 
+## 🖥️ SAMEBI INFRASTRUCTURE & SERVER-ZUGANG
+
+### Server-Zugriff:
+```
+WICHTIG: Alle Infrastructure-Details sind dokumentiert in INFRASTRUCTURE.md
+
+Server-Zugang:
+- Hetzner Server IP: 91.98.93.203
+- SSH-Key: ~/.ssh/id_ed25519_hetzner
+- SSH-Config bereits eingerichtet
+- Deployment via Coolify (Self-Hosted)
+
+Bei Server-Operationen:
+1. IMMER INFRASTRUCTURE.md konsultieren
+2. SSH-Key verwenden (nie Passwort)
+3. Vor kritischen Änderungen Backup prüfen
+4. Rollback-Plan bereithalten
+5. Monitoring-Alerts beachten
+
+Siehe INFRASTRUCTURE.md für:
+- Vollständige Server-Details
+- PostgreSQL-Connection-Strings
+- Docker-Container-Namen
+- Port-Mappings
+- Domain-Konfiguration
+- Coolify-Zugang
+```
+
+---
+
 **🎯 Diese SAMEBI-spezifischen Regeln ergänzen die universellen Cursor-Regeln und stellen sicher, dass alle Entwicklungen aligned sind mit der Multi-Tool Platform Vision, der Template-First Architektur und dem 5-15M€ Exit-Ziel.**
 
 ---
