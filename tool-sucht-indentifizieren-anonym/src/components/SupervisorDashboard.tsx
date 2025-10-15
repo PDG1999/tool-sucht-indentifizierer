@@ -9,7 +9,8 @@ import {
   Download,
   MapPin,
   Smartphone,
-  Loader2
+  Loader2,
+  RefreshCw
 } from 'lucide-react';
 import api from '../services/api';
 
@@ -227,6 +228,16 @@ const SupervisorDashboard: React.FC = () => {
                   <option value="1y">Letztes Jahr</option>
                   <option value="all">Alle Zeit</option>
                 </select>
+                
+                <button 
+                  onClick={loadSupervisorData}
+                  disabled={loading}
+                  className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  title="Daten aktualisieren"
+                >
+                  <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                  <span>Aktualisieren</span>
+                </button>
                 
                 <button 
                   className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
