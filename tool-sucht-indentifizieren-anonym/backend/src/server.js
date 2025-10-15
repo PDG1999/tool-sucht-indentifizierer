@@ -20,7 +20,9 @@ app.use(compression());
 // CORS configuration - support multiple origins
 const allowedOrigins = process.env.CORS_ORIGIN 
   ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
-  : ['http://localhost:3004'];
+  : ['http://localhost:3004', 'http://localhost:3002'];
+
+console.log('🔗 CORS Origin:', allowedOrigins.join(', '));
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -30,10 +32,15 @@ app.use(cors({
     if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
       callback(null, true);
     } else {
+      console.warn('❌ CORS blocked:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 600 // 10 minutes
 }));
 
 // Rate limiting

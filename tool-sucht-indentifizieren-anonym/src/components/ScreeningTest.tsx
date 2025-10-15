@@ -108,11 +108,13 @@ const ScreeningTest: React.FC = () => {
     
     // Track page unload (user leaves without finishing)
     const handleBeforeUnload = async () => {
+      // IMMER speichern, auch bei nur 1 Antwort
       if (sessionTrackerRef.current && !showResults && responses.length > 0) {
-        sessionTrackerRef.current.abort(shuffledQuestions[currentStep].id);
+        sessionTrackerRef.current.abort(shuffledQuestions[currentStep]?.id || 'unknown');
+        
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
         
         // WICHTIG: Speichere Progress sofort (synchron)!
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
         try {
           const progressData = JSON.stringify({
             sessionId,
@@ -126,48 +128,50 @@ const ScreeningTest: React.FC = () => {
           console.warn('⚠️ Progress save on exit failed:', error);
         }
         
-        // Speichere abgebrochenen Test sofort!
-        const publicScores = calculatePublicScores(responses);
-        const proScores = calculateProfessionalScores(responses);
-        const sessionData = sessionTrackerRef.current?.getSession();
-        
-        try {
-          // Map German risk levels to English for API
-          const getRiskLevelEN = (score: number): string => {
-            if (score >= 70) return 'critical';
-            if (score >= 50) return 'high';
-            if (score >= 30) return 'moderate';
-            return 'low';
-          };
+        // ERWEITERT: Speichere Test SOFORT wenn >= 10 Fragen beantwortet (nicht nur beim Abschluss)
+        if (responses.length >= 10) {
+          const publicScores = calculatePublicScores(responses);
+          const proScores = calculateProfessionalScores(responses);
+          const sessionData = sessionTrackerRef.current?.getSession();
           
-          // Verwende navigator.sendBeacon für zuverlässige Übertragung beim Verlassen
-          const data = JSON.stringify({
-            responses: responses.map(r => ({ questionId: r.questionId, answer: r.value })),
-            publicScores,
-            professionalScores: proScores,
-            riskLevel: getRiskLevelEN(proScores.overall),
-            primaryConcern: proScores.addictionDirection?.primary.type || 'Unbekannt',
-            aborted: true, // ← Markiere als abgebrochen!
-            abortedAtQuestion: currentStep + 1,
-            completedQuestions: responses.length,
-            sessionData: sessionData ? {
-              userSession: sessionData.userSession,
-              testSession: sessionData.testSession,
-              questionMetrics: sessionData.questionMetrics,
-            } : undefined,
-            trackingData: trackingData ? {
-              geoData: trackingData.geoData,
-              deviceData: trackingData.deviceData,
-              browserFingerprint: trackingData.browserFingerprint,
-              referrer: trackingData.referrer
-            } : undefined,
-          });
-          
-          const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-          navigator.sendBeacon(`${API_URL}/test-results/submit`, new Blob([data], { type: 'application/json' }));
-          console.log('Abgebrochener Test gespeichert:', responses.length, 'Fragen');
-        } catch (error) {
-          console.error('Fehler beim Speichern des abgebrochenen Tests:', error);
+          try {
+            // Map German risk levels to English for API
+            const getRiskLevelEN = (score: number): string => {
+              if (score >= 70) return 'critical';
+              if (score >= 50) return 'high';
+              if (score >= 30) return 'moderate';
+              return 'low';
+            };
+            
+            // Verwende navigator.sendBeacon für zuverlässige Übertragung beim Verlassen
+            const data = JSON.stringify({
+              responses: responses.map(r => ({ questionId: r.questionId, answer: r.value })),
+              publicScores,
+              professionalScores: proScores,
+              riskLevel: getRiskLevelEN(proScores.overallRisk),
+              primaryConcern: proScores.categories.sort((a, b) => b.score - a.score)[0]?.name || 'Unbekannt',
+              aborted: true, // ← Markiere als abgebrochen!
+              abortedAtQuestion: currentStep + 1,
+              completedQuestions: responses.length,
+              sessionData: sessionData ? {
+                userSession: sessionData.userSession,
+                testSession: sessionData.testSession,
+                questionMetrics: sessionData.questionMetrics,
+              } : undefined,
+              trackingData: trackingData ? {
+                geoData: trackingData.geoData,
+                deviceData: trackingData.deviceData,
+                browserFingerprint: trackingData.browserFingerprint,
+                referrer: trackingData.referrer
+              } : undefined,
+            });
+            
+            // Verwende sendBeacon - garantiert Übertragung auch bei Page Unload
+            const success = navigator.sendBeacon(`${API_URL}/test-results/submit`, new Blob([data], { type: 'application/json' }));
+            console.log('🚨 Abgebrochener Test gespeichert:', responses.length, 'Fragen, Success:', success);
+          } catch (error) {
+            console.error('❌ Fehler beim Speichern des abgebrochenen Tests:', error);
+          }
         }
       }
     };

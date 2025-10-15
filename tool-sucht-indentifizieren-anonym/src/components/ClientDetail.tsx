@@ -252,21 +252,26 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ clientId, onBack }) => {
 
           {/* Category Breakdown */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            {[
-              { key: 'gambling', label: 'Spielsucht', icon: '🎰' },
-              { key: 'alcohol', label: 'Alkohol', icon: '🍷' },
-              { key: 'substances', label: 'Substanzen', icon: '💊' },
-              { key: 'shopping', label: 'Kaufsucht', icon: '🛍️' },
-              { key: 'digital', label: 'Digital', icon: '📱' },
-            ].map(({ key, label, icon }) => {
-              const score = latestTest.professional_scores?.[key] || 0;
+            {(latestTest.professional_scores?.categories || []).map((category: any, index: number) => {
+              const score = category.score || 0;
+              const categoryName = category.name || 'Unbekannt';
+              const risk = category.risk || 'Unbekannt';
+              
+              // Icon basierend auf Kategorie-Namen
+              const icon = categoryName.includes('Zeit') ? '⏰' :
+                          categoryName.includes('Finanz') ? '💰' :
+                          categoryName.includes('Emotion') ? '😔' :
+                          categoryName.includes('Sozial') ? '👥' :
+                          categoryName.includes('Gesundheit') ? '🏥' : '📊';
+              
               return (
-                <div key={key} className="p-4 border border-gray-200 rounded-lg">
+                <div key={index} className="p-4 border border-gray-200 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-lg">{icon}</span>
                     <span className={`font-bold ${getScoreColor(score)}`}>{score}/100</span>
                   </div>
-                  <p className="text-sm font-medium text-gray-900">{label}</p>
+                  <p className="text-sm font-medium text-gray-900">{categoryName}</p>
+                  <p className="text-xs text-gray-600 mb-2">Risiko: {risk}</p>
                   <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                     <div 
                       className={`h-2 rounded-full transition-all duration-300 ${
