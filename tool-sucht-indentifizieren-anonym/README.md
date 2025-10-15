@@ -201,3 +201,4 @@ Bei Fragen oder Problemen:
 
 **Wichtig**: Dieses Tool ist ein Screening-Instrument, keine diagnostische Methode. 
 Alle Ergebnisse sollten von qualifizierten Fachkräften interpretiert werden.
+# Trigger rebuild
