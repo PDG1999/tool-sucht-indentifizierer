@@ -191,6 +191,24 @@ router.post('/submit', async (req, res) => {
       device: trackingData?.deviceData?.deviceType
     });
     
+    // SERVER-SIDE GEO-TRACKING: Fetch geo data from user IP
+    const { getServerSideTracking } = require('../utils/geoTracking');
+    let serverSideGeo = null;
+    
+    try {
+      const serverTracking = await getServerSideTracking(req);
+      if (serverTracking.geoData) {
+        serverSideGeo = serverTracking.geoData;
+        console.log('✅ Server-side geo tracking successful:', {
+          city: serverSideGeo.city,
+          country: serverSideGeo.country,
+          ip: serverTracking.ip
+        });
+      }
+    } catch (error) {
+      console.warn('⚠️ Server-side geo tracking failed:', error.message);
+    }
+    
     // Get system account ID for anonymous tests
     const { pool } = require('../config/database');
     const systemAccountQuery = await pool.query(
@@ -215,29 +233,33 @@ router.post('/submit', async (req, res) => {
     }
     
     // Prepare tracking data for database
-    const trackingDataForDB = trackingData ? {
-      browser_fingerprint: trackingData.browserFingerprint,
-      ip_address: trackingData.geoData?.ip,
-      user_agent: trackingData.deviceData?.userAgent,
-      geo_data: trackingData.geoData ? {
-        city: trackingData.geoData.city,
-        region: trackingData.geoData.region,
-        country: trackingData.geoData.country,
-        countryCode: trackingData.geoData.countryCode,
-        latitude: trackingData.geoData.latitude,
-        longitude: trackingData.geoData.longitude,
-        timezone: trackingData.geoData.timezone,
-        isp: trackingData.geoData.isp
+    // Use server-side geo if client-side geo is missing
+    const geoDataToUse = trackingData?.geoData || serverSideGeo;
+    
+    const trackingDataForDB = {
+      browser_fingerprint: trackingData?.browserFingerprint,
+      ip_address: serverSideGeo?.ip || trackingData?.geoData?.ip,
+      user_agent: trackingData?.deviceData?.userAgent,
+      geo_data: geoDataToUse ? {
+        city: geoDataToUse.city,
+        region: geoDataToUse.region,
+        country: geoDataToUse.country,
+        countryCode: geoDataToUse.countryCode,
+        latitude: geoDataToUse.latitude,
+        longitude: geoDataToUse.longitude,
+        timezone: geoDataToUse.timezone,
+        isp: geoDataToUse.isp,
+        source: serverSideGeo ? 'server' : 'client' // Track where geo came from
       } : null,
-      device_type: trackingData.deviceData?.deviceType,
-      browser: trackingData.deviceData?.browser,
-      browser_version: trackingData.deviceData?.browserVersion,
-      os: trackingData.deviceData?.os,
-      os_version: trackingData.deviceData?.osVersion,
-      screen_resolution: trackingData.deviceData?.screenResolution,
-      language: trackingData.deviceData?.language,
-      referrer: trackingData.referrer
-    } : null;
+      device_type: trackingData?.deviceData?.deviceType,
+      browser: trackingData?.deviceData?.browser,
+      browser_version: trackingData?.deviceData?.browserVersion,
+      os: trackingData?.deviceData?.os,
+      os_version: trackingData?.deviceData?.osVersion,
+      screen_resolution: trackingData?.deviceData?.screenResolution,
+      language: trackingData?.deviceData?.language,
+      referrer: trackingData?.referrer
+    };
 
     const testResult = await TestResult.create({
       clientId: client ? client.id : null,
