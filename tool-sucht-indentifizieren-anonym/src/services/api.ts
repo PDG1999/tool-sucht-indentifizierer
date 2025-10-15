@@ -1,5 +1,8 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
+// PostgREST Mode Detection
+const USE_POSTGREST = API_BASE_URL.includes('api.samebi.net') && !API_BASE_URL.includes('/api');
+
 // Helper function for API calls
 async function apiCall(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem('auth_token');
