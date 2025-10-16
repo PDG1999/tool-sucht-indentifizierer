@@ -59,6 +59,7 @@ if (!JWT_SECRET) {
 }
 
 // Middleware
+app.set('trust proxy', true); // Trust Traefik/Coolify proxy
 app.use(helmet());
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
@@ -123,7 +124,7 @@ app.post('/auth/login', loginLimiter, async (req, res) => {
     // Find counselor in database
     const result = await pool.query(
       `SELECT id, email, password_hash, role, name, is_active, last_login_at
-       FROM public.counselors 
+       FROM api.counselors 
        WHERE email = $1 AND is_active = true`,
       [email]
     );
@@ -149,7 +150,7 @@ app.post('/auth/login', loginLimiter, async (req, res) => {
 
     // Update last login
     await pool.query(
-      'UPDATE public.counselors SET last_login_at = NOW() WHERE id = $1',
+      'UPDATE api.counselors SET last_login_at = NOW() WHERE id = $1',
       [counselor.id]
     );
 
@@ -239,7 +240,7 @@ app.post('/auth/register', async (req, res) => {
   try {
     // Check if user exists
     const existing = await pool.query(
-      'SELECT id FROM public.counselors WHERE email = $1',
+      'SELECT id FROM api.counselors WHERE email = $1',
       [email]
     );
 
@@ -254,7 +255,7 @@ app.post('/auth/register', async (req, res) => {
 
     // Insert new counselor
     const result = await pool.query(
-      `INSERT INTO public.counselors (email, password_hash, name, practice_name, role, is_active)
+      `INSERT INTO api.counselors (email, password_hash, name, practice_name, role, is_active)
        VALUES ($1, $2, $3, $4, 'counselor', true)
        RETURNING id, email, name, role`,
       [email, passwordHash, name, practiceName || null]
